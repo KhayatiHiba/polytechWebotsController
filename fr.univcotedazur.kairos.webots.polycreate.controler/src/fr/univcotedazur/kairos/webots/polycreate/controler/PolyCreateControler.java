@@ -49,8 +49,10 @@ public class PolyCreateControler extends Supervisor {
 	public Pen getPen() {
 		return pen;
 	}
+		
+	public boolean collisionLeft, collisionRight, virtualWall ;
 
-
+	
 	public Motor[] gripMotors = new Motor[2];
 	public DistanceSensor gripperSensor = null;
 
@@ -92,10 +94,6 @@ public class PolyCreateControler extends Supervisor {
 	public PolyCreateControler() {
 		timestep = (int) Math.round(this.getBasicTimeStep());
 
-
-		
-		
-		
 		
 		pen = createPen("pen");
 
@@ -187,11 +185,14 @@ public class PolyCreateControler extends Supervisor {
 	}
 
 	public boolean isThereCollisionAtLeft() {
-		return (leftBumper.getValue() != 0.0);
+		collisionLeft = leftBumper.getValue() != 0.0;
+		return collisionLeft;
+		
 	}
 
 	public boolean isThereCollisionAtRight() {
-		return (rightBumper.getValue() != 0.0);
+		collisionRight = (rightBumper.getValue() != 0.0);
+		return collisionRight;
 	}
 
 	public void flushIRReceiver() {
@@ -200,7 +201,8 @@ public class PolyCreateControler extends Supervisor {
 	}
 
 	public boolean isThereVirtualwall() {
-		return (receiver.getQueueLength() > 0);
+		virtualWall = (receiver.getQueueLength() > 0);
+		return virtualWall;
 	}
 	
 	public void goForward() {
@@ -264,6 +266,8 @@ public class PolyCreateControler extends Supervisor {
 
 
 	public static void main(String[] args) {
+		
+		System.out.println("let's start");
 		PolyCreateControler controler = new PolyCreateControler();
 
 		try {

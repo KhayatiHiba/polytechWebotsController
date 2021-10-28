@@ -11,8 +11,8 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation 0.7908693603383237 0.46593691125744024 0.39677254139610896 4.638520835158328
-  position -3.155698322165908 13.51253758852321 5.7994523591156675
+  orientation -0.11733236264435819 0.9709328428362215 0.2086205439985859 2.1419476624558618
+  position 14.307417194144051 9.018965648204535 -6.280237666562438
   near 0.1
   follow "Create"
 }
@@ -80,11 +80,12 @@ Wall {
   size 1.3 2.4 0.3
 }
 Door {
-  hidden translation_5 1.5320464896717567e-09 0 0.0010000036568935666
+  hidden translation_5 -2.2015157535748564e-05 5.551115123125783e-16 0.0009474594108578593
+  hidden rotation_5 0 0.9999999999999999 0 0.00011062202968625257
   translation 0 0 1.65
   rotation 0 1 0 3.14159
   size 1 2.4 0.3
-  position -3.347271062988433e-10
+  position 0.00011062202858568788
 }
 Bed {
   translation -3.2800000002397445 0 -3.75
@@ -94,8 +95,8 @@ Table {
   translation 3.86254 0 3.28632
 }
 Solid {
-  translation 2.23 -0.00285774 1.9
-  rotation 0.8160219595449832 0.3196468170617602 -0.48159534246361985 3.3214645394343465e-17
+  translation 2.2174594020081777 -0.0023924005230958056 1.8955923085041815
+  rotation 7.215815944808709e-09 -1 -8.538408354539313e-09 0.1003476213982174
   children [
     Shape {
       appearance PBRAppearance {
@@ -210,14 +211,12 @@ LandscapePainting {
   rotation 0 1 0 -1.5708
 }
 CreateWall {
-  hidden linearVelocity_0 6.22815090564706e-17 -3.9686422461002744e-05 2.6001854484811265e-17
-  hidden angularVelocity_0 9.905295506369587e-16 -1.5433842969123673e-16 -2.2041156818765904e-15
-  translation -3.16665 -7.340261953871913e-05 4.72729
-  rotation 3.9271627561560546e-17 1 -2.3423118527612687e-17 1.5708000000000002
+  translation -3.16665 -7.847999683121415e-05 4.72729
+  rotation 2.3597919208710228e-17 1 -7.749410816837438e-18 1.5708000000000002
 }
 DEF IROBOT_CREATE Robot {
-  translation -0.0192695 0.019531 4.46321
-  rotation 0.9994666692397797 0.0029869773387818563 -0.03251853387098509 0.027758964378735217
+  translation -0.2045705946163296 0.0437086143246981 1.0391227553188793
+  rotation 0.009970921033384416 0.9997508364254286 -0.019971124164697127 2.1889658639174074
   children [
     DEF BODY_SLOT Group {
       children [
@@ -393,7 +392,7 @@ DEF IROBOT_CREATE Robot {
             }
             DEF RIGHT_FINGER HingeJoint {
               jointParameters HingeJointParameters {
-                position -1.367779067905393e-07
+                position 0.5000001151666533
                 axis -1 0 0
                 anchor 0 0 0.058
                 minStop -0.001
@@ -415,7 +414,7 @@ DEF IROBOT_CREATE Robot {
               ]
               endPoint Solid {
                 translation 0 0 0.058
-                rotation 1 0 0 0.343000136777907
+                rotation -1 0 0 0.15700011516665516
                 children [
                   DEF FINGER_SHAPE Transform {
                     translation -0.0007002 0.0360533 -0.0141252
@@ -694,11 +693,13 @@ DEF IROBOT_CREATE Robot {
                 }
                 physics DEF FINGER_PHYSICS Physics {
                 }
+                linearVelocity -0.41960027248879556 -0.002320716693010306 0.27285998489695557
+                angularVelocity -0.05386205541343724 0.07555320251010912 0.056173081807710565
               }
             }
             DEF LEFT_FINGER HingeJoint {
               jointParameters HingeJointParameters {
-                position -1.3672664517622104e-07
+                position 0.49999982554773875
                 anchor 0 0 0.058
                 minStop -0.001
                 maxStop 1.048
@@ -719,7 +720,7 @@ DEF IROBOT_CREATE Robot {
               ]
               endPoint Solid {
                 translation 0 0 0.058
-                rotation -9.07041075299047e-14 0.17066103443812997 0.985329798252599 3.14159
+                rotation 3.2825419843148364e-07 -0.07841887828533688 0.9969204980981993 3.141590082493623
                 children [
                   USE FINGER_SHAPE
                   USE FINGER_CONNECTOR_SHAPE
@@ -839,6 +840,8 @@ DEF IROBOT_CREATE Robot {
                 contactMaterial "p-grip finger"
                 boundingObject USE FINGER_BO
                 physics USE FINGER_PHYSICS
+                linearVelocity -0.41245893484266066 0.006966348105908257 0.2671420193956371
+                angularVelocity -0.053862069178766306 0.07555230482468883 0.05617307461860059
               }
             }
             DistanceSensor {
@@ -998,7 +1001,7 @@ DEF IROBOT_CREATE Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position 1.9199994713672615
+        position 13549.829520722187
         axis -1 0 0
         anchor 0 -0.014 0.006176
       }
@@ -1013,8 +1016,8 @@ DEF IROBOT_CREATE Robot {
         }
       ]
       endPoint DEF CREATE_RIGHT_WHEEL Solid {
-        translation 0.135878 -0.014 0.006176
-        rotation -0.9999999999999999 0 0 1.9199994713672615
+        translation 0.13587799999999994 -0.014 0.006176
+        rotation -0.9999999999999999 0 0 3.281998442998782
         children [
           Transform {
             rotation 0 0 1 1.5708
@@ -1060,11 +1063,13 @@ DEF IROBOT_CREATE Robot {
           density -1
           mass 0.05
         }
+        linearVelocity -0.40581233961902635 -0.0004311777276319391 0.28573551981657064
+        angularVelocity 9.214285303229842 0.08019653433043997 13.098561140150927
       }
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position 1.9199994761540184
+        position 12429.722884100564
         axis -1 0 0
         anchor 0 -0.014 0.006176
       }
@@ -1079,8 +1084,8 @@ DEF IROBOT_CREATE Robot {
         }
       ]
       endPoint DEF CREATE_LEFT_WHEEL Solid {
-        translation -0.135878 -0.014 0.006176
-        rotation -0.9999999999999999 0 0 1.9199994761540184
+        translation -0.13587800000000003 -0.014 0.006176
+        rotation -1 0 0 1.5823464993414817
         children [
           Transform {
             rotation 0 0 1 1.5708
@@ -1092,6 +1097,8 @@ DEF IROBOT_CREATE Robot {
         name "left wheel"
         boundingObject USE CREATE_WHEEL_BOUNDING_OBJECT
         physics USE CREATE_WHEEL_PHYSICS
+        linearVelocity -0.40600813727468466 -0.0011803128417918033 0.2844971586891905
+        angularVelocity 9.215566567781655 0.06186300196092477 13.0976109124536
       }
     }
     DEF CREATE_REAR_WHEEL Solid {
@@ -1119,8 +1126,8 @@ DEF IROBOT_CREATE Robot {
       channel 1
     }
     DEF CREATE_BUMPER_LEFT TouchSensor {
-      translation 2.3866998323171518e-06 -2.8270707424171704e-05 -0.0002397355486092323
-      rotation -4.9265397244213385e-08 0.9999999999999577 -2.8665801039420467e-07 0.7269319717657573
+      translation -0.00010205576695487828 -3.766671082127207e-05 -0.00036813887715314575
+      rotation -4.870551675122688e-08 0.9999999999999583 -2.848505285966695e-07 0.7269319691475775
       name "bumper_left"
       boundingObject DEF CREATE_BUMPER_BOUNDING_OBJECT Group {
         children [
@@ -1159,13 +1166,17 @@ DEF IROBOT_CREATE Robot {
           0 0 0
         ]
       }
+      linearVelocity -0.39532055529406485 0.004484768570910966 0.2849404875832671
+      angularVelocity -0.0538620527741259 0.07555278539462558 0.056173078288625125
     }
     DEF CREATE_BUMPER_RIGHT TouchSensor {
-      translation 2.43717562543877e-06 -2.82670185723366e-05 -0.00024263418291514682
-      rotation 4.9472337077973703e-08 0.9999999999999574 -2.882321726505635e-07 -0.7269299720523124
+      translation 6.827665848063713e-05 -4.181904555341717e-05 -0.0003953205299778162
+      rotation -4.9298482040785454e-08 -0.999999999999957 2.8902122263908897e-07 0.7269299746770488
       name "bumper_right"
       boundingObject USE CREATE_BUMPER_BOUNDING_OBJECT
       physics USE CREATE_BUMPER_PHYSICS
+      linearVelocity -0.40545450046583953 -0.008694376040326489 0.29305593137099306
+      angularVelocity -0.05386205315482366 0.07555278570614582 0.0561730903558652
     }
     DEF CREATE_LED_ON LED {
       translation -0.061709 0.034885 -0.0202
@@ -1175,6 +1186,7 @@ DEF IROBOT_CREATE Robot {
           appearance PBRAppearance {
             baseColor 0 0.258824 0.0117647
             metalness 0
+            emissiveColor 1 0 0
           }
           geometry IndexedFaceSet {
             coord DEF coord_LEDon Coordinate {
@@ -1273,6 +1285,8 @@ DEF IROBOT_CREATE Robot {
   }
   controller "<extern>"
   supervisor TRUE
+  linearVelocity -0.4077758773939935 -8.62394086880515e-06 0.28003080339705516
+  angularVelocity -0.05386205787211502 0.07555274924990252 0.05617309459852745
 }
 Robot {
   children [
@@ -1321,14 +1335,17 @@ Robot {
   supervisor TRUE
 }
 DEF can Can {
-  translation 0.71 0.0608594 1.94
-  rotation -0.7715825068552147 0.45768877526795004 0.4417934133831633 -8.791370622521705e-17
+  translation 0.71 0.06096265993577898 1.94
+  rotation 0.2625997707783231 -0.5617947946610858 0.784492172732705 1.2915601113271363e-16
 }
 DEF can Can {
-  translation 0 0.0608594 1.56
-  rotation -0.7715825068552147 0.45768877526795004 0.4417934133831633 -8.791370622521705e-17
+  translation 0.0016915952428382549 0.06096265999072241 1.548466338597963
+  rotation -1.968092132800913e-08 -0.9999999999999996 2.221993993412213e-08 0.036060562301156764
   name "can(1)"
 }
 Apple {
-  translation -0.67 0.0297898 1.92
+  hidden linearVelocity_0 0.01908309722970086 4.754132217289277e-17 -0.026838510296354427
+  hidden angularVelocity_0 -0.5367702059270885 -0.5173040475811662 -0.38166194459401714
+  translation 4.300032424778786 0.04976455999999999 4.215301930667793
+  rotation 0.5869787507214971 0.32126247501183414 -0.7431328066709889 2.37747315329316
 }

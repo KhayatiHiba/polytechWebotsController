@@ -10,7 +10,11 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="fr.univcotedazur.kairos.webots.polycreate.controler/webotsLibs"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="fr.univcotedazur.kairos.webots.polycreate.controler/webotsLibs"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="webotsLibs/Controller.jar">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="fr.univcotedazur.kairos.webots.polycreate.controler/webotsLibs"/>
