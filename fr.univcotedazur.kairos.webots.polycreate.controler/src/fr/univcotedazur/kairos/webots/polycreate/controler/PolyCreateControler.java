@@ -279,7 +279,6 @@ public class PolyCreateControler extends Supervisor {
 	}
 	
 	public void turning() {
-		// TODO Auto-generated method stub
 		this.turn(Math.PI/4);
 		
 	}
