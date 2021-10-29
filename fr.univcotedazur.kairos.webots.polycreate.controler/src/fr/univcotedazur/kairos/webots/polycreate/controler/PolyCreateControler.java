@@ -108,7 +108,6 @@ public class PolyCreateControler extends Supervisor {
 		theCtrl = new Statechart2(); 
 		TimerService timer = new TimerService();
 		theCtrl.setTimerService(timer);
-		theCtrl.enter();
 
 		////////////
 		
@@ -175,7 +174,12 @@ public class PolyCreateControler extends Supervisor {
 		gps.enable(timestep);
 		
 		//observeurs
-		theCtrl.getCheck().subscribe( new MyObserverOfObstacle(this));
+		theCtrl.getTurn().subscribe( new MyObserverTurn(this));
+		theCtrl.getMoveFront().subscribe( new MyObserverMoveFront(this));
+		theCtrl.getCheck().subscribe(new MyObserverCheck(this));
+		
+		theCtrl.enter();
+
 		
 		PolyCreateControler ctrl = this;
 		Runtime.getRuntime().addShutdownHook(new Thread()
@@ -195,11 +199,21 @@ public class PolyCreateControler extends Supervisor {
 		if(this.isThereVirtualwall()) {
 			theCtrl.raiseThereIsAnObstacle();
 		}
+		else if((this.isThereCollisionAtLeft())) {
+			theCtrl.raiseThereIsAnObstacle();
+		}
+		else if((this.isThereCollisionAtRight())) {
+			theCtrl.raiseThereIsAnObstacle();
+		}
+		else if(!(this.isThereVirtualwall())) {
+			theCtrl.raiseThereIsNoObstacle();
+		}
 	}
 		
-	public void turning() {
-		this.turn(Math.PI);
+	public void dodgeObstacle() {
+		this.turn(Math.PI/9);
 	}
+	
 
 	public void openGripper() {
 		gripMotors[0].setPosition(0.5);
@@ -296,8 +310,11 @@ public class PolyCreateControler extends Supervisor {
 		
 		System.out.println("let's start");
 		PolyCreateControler controler = new PolyCreateControler();
-		controler.check();
 
+		
+		while(true) {
+			controler.passiveWait(0.5);
+		}
 
 		/*try {
 			controler.openGripper();
