@@ -1,0 +1,16 @@
+GeneratorModel for yakindu::java {
+
+	const PROJECT : string =
+	"fr.univcotedazur.kairos.webots.polycreate.controler"
+
+	const FOLDER : string = "src-gen"
+
+	statechart Statechart2 {
+
+		feature Outlet {
+			targetProject = PROJECT
+			targetFolder = FOLDER
+			libraryTargetFolder = "src"
+		}
+	}
+}

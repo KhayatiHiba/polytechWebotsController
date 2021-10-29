@@ -5,7 +5,7 @@
       <vertices xsi:type="sgraph:Entry" xmi:id="_KEsb7DMaEeyq8aMKB5sIBg">
         <outgoingTransitions xmi:id="_KEsb7TMaEeyq8aMKB5sIBg" target="_KEsb7jMaEeyq8aMKB5sIBg"/>
       </vertices>
-      <vertices xsi:type="sgraph:State" xmi:id="_KEsb7jMaEeyq8aMKB5sIBg" specification="entry / raise check" name="StandBy" incomingTransitions="_KEsb7TMaEeyq8aMKB5sIBg">
+      <vertices xsi:type="sgraph:State" xmi:id="_KEsb7jMaEeyq8aMKB5sIBg" specification="every 200ms / raise check" name="StandBy" incomingTransitions="_KEsb7TMaEeyq8aMKB5sIBg">
         <outgoingTransitions xmi:id="_NftAcDfLEeykv_BZW_FuXg" specification="[Obstacle == false] &#xD;&#xA;/ raise run" target="_8BzmMDfKEeykv_BZW_FuXg"/>
       </vertices>
       <vertices xsi:type="sgraph:State" xmi:id="_8BzmMDfKEeykv_BZW_FuXg" name="moving" incomingTransitions="_NftAcDfLEeykv_BZW_FuXg _qc2LkDfTEeykv_BZW_FuXg">

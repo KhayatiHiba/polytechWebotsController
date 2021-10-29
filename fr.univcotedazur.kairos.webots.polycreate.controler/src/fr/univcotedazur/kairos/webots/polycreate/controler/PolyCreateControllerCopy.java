@@ -12,7 +12,6 @@
 package fr.univcotedazur.kairos.webots.polycreate.controler;
 
 import java.util.Random;
-import fr.univcotedazur.kairos.webots.polycreate.controler.Statechart2;
 
 //import org.eclipse.january.dataset.Dataset;
 //import org.eclipse.january.dataset.DatasetFactory;
@@ -31,7 +30,7 @@ import com.cyberbotics.webots.controller.Robot;
 import com.cyberbotics.webots.controller.Supervisor;
 import com.cyberbotics.webots.controller.TouchSensor;
 
-public class PolyCreateControler extends Supervisor {
+public class PolyCreateControllerCopy extends Supervisor {
 
 	static int MAX_SPEED = 16;
 	static int NULL_SPEED = 0;
@@ -51,7 +50,7 @@ public class PolyCreateControler extends Supervisor {
 		return pen;
 	}
 		
-	public boolean thereIsAnObstacle, thereIsNoObstacle ;
+	public boolean collisionLeft, collisionRight, virtualWall ;
 
 	
 	public Motor[] gripMotors = new Motor[2];
@@ -89,15 +88,12 @@ public class PolyCreateControler extends Supervisor {
 	public 	int timestep = Integer.MAX_VALUE;
 	public 	Random random = new Random();
 
-	//added modification
-	public Statechart2 theCtrl;
 
 
 
-	public PolyCreateControler() {
+	public PolyCreateControllerCopy() {
 		timestep = (int) Math.round(this.getBasicTimeStep());
 
-		theCtrl = new Statechart2(); /////////added
 		
 		pen = createPen("pen");
 
@@ -157,7 +153,7 @@ public class PolyCreateControler extends Supervisor {
 		gps = createGPS("gps");
 		gps.enable(timestep);
 		
-		PolyCreateControler ctrl = this;
+		PolyCreateControllerCopy ctrl = this;
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{
 			@Override
@@ -267,31 +263,14 @@ public class PolyCreateControler extends Supervisor {
 	public double[] getPosition() {
 		return gps.getValues();
 	}
-	
-	//graphics and listener settings
-	
-	public void check() {
-		if(this.isThereVirtualwall()) {
-			 theCtrl.raiseThereIsAnObstacle();
-		}
-	}
-	
-	public void turning() {
-		// TODO Auto-generated method stub
-		this.turn(Math.PI/4);
-		
-	}
 
-	
-			
 
 	public static void main(String[] args) {
 		
 		System.out.println("let's start");
 		PolyCreateControler controler = new PolyCreateControler();
 
-
-		/*try {
+		try {
 			controler.openGripper();
 			controler.pen.write(true);
 			controler.ledOn.set(1);
@@ -302,7 +281,7 @@ public class PolyCreateControler extends Supervisor {
 				 * The position and orientation are expressed relatively to the camera (the relative position is the one of the center of the object which can differ from its origin) and the units are meter and radian.
 				 * https://www.cyberbotics.com/doc/reference/camera?tab-language=python#wb_camera_has_recognition
 				 */
-				/*Node anObj = controler.getFromDef("can"); //should not be there, only to have another orientation for testing...
+				Node anObj = controler.getFromDef("can"); //should not be there, only to have another orientation for testing...
 				controler.passiveWait(0.1);
 				
 			//	System.out.println("the orientation of the can is " +controler.computeRelativeObjectOrientation(anObj.getPosition(),anObj.getOrientation()));
@@ -321,7 +300,7 @@ public class PolyCreateControler extends Supervisor {
 					/**
 					 * The position and orientation are expressed relatively to the camera (the relative position is the one of the center of the object which can differ from its origin) and the units are meter and radian.
 					 */
-					/*System.out.println("        I saw an object on back Camera at : "+backObjPos[0]+","+backObjPos[1]);
+					System.out.println("        I saw an object on back Camera at : "+backObjPos[0]+","+backObjPos[1]);
 				}
 				CameraRecognitionObject[] frontObjs = controler.frontCamera.getRecognitionObjects();
 				if (frontObjs.length > 0) {
@@ -348,11 +327,18 @@ public class PolyCreateControler extends Supervisor {
 					controler.goForward();
 				}
 				controler.flushIRReceiver();
+				
+				
+				
+				
+				
 			}
 
 		}catch (Exception e) {
 			controler.delete();
-		}*/
+		}
+
+
 
 	}
 
