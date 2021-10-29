@@ -12,6 +12,9 @@
 package fr.univcotedazur.kairos.webots.polycreate.controler;
 
 import java.util.Random;
+
+import javax.swing.Timer;
+
 import fr.univcotedazur.kairos.webots.polycreate.controler.Statechart2;
 
 //import org.eclipse.january.dataset.Dataset;
@@ -30,6 +33,9 @@ import com.cyberbotics.webots.controller.Receiver;
 import com.cyberbotics.webots.controller.Robot;
 import com.cyberbotics.webots.controller.Supervisor;
 import com.cyberbotics.webots.controller.TouchSensor;
+import com.yakindu.core.ITimerService;
+import com.yakindu.core.TimerService;
+
 
 public class PolyCreateControler extends Supervisor {
 
@@ -84,6 +90,7 @@ public class PolyCreateControler extends Supervisor {
 
 	public Receiver receiver = null;
 
+	protected Timer msTimer;
 	public GPS gps = null;
 	
 	public 	int timestep = Integer.MAX_VALUE;
@@ -97,7 +104,13 @@ public class PolyCreateControler extends Supervisor {
 	public PolyCreateControler() {
 		timestep = (int) Math.round(this.getBasicTimeStep());
 
-		theCtrl = new Statechart2(); /////////added
+/////////added
+		theCtrl = new Statechart2(); 
+		TimerService timer = new TimerService();
+		theCtrl.setTimerService(timer);
+		theCtrl.enter();
+
+		////////////
 		
 		pen = createPen("pen");
 
@@ -161,6 +174,9 @@ public class PolyCreateControler extends Supervisor {
 		gps = createGPS("gps");
 		gps.enable(timestep);
 		
+		//observeurs
+		theCtrl.getCheck().subscribe( new MyObserverOfObstacle(this));
+		
 		PolyCreateControler ctrl = this;
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{
@@ -173,6 +189,17 @@ public class PolyCreateControler extends Supervisor {
 		});
 	}
 
+	//graphics and listener settings
+	
+	public void check() {
+		if(this.isThereVirtualwall()) {
+			theCtrl.raiseThereIsAnObstacle();
+		}
+	}
+		
+	public void turning() {
+		this.turn(Math.PI/4);
+	}
 
 	public void openGripper() {
 		gripMotors[0].setPosition(0.5);
@@ -258,29 +285,8 @@ public class PolyCreateControler extends Supervisor {
 		step(timestep);
 	}
 
-	/**
-	 * The values are returned as a 3D-vector, therefore only the indices 0, 1, and 2 are valid for accessing the vector.
-	 * The returned vector indicates the absolute position of the GPS device. This position can either be expressed in the 
-	 * cartesian coordinate system of Webots or using latitude-longitude-altitude, depending on the value of the 
-	 * gpsCoordinateSystem field of the WorldInfo node. The gpsReference field of the WorldInfo node can be used to define
-	 * the reference point of the GPS. The wb_gps_get_speed function returns the current GPS speed in meters per second.
-	 * @return
-	 */
 	public double[] getPosition() {
 		return gps.getValues();
-	}
-	
-	//graphics and listener settings
-	
-	public void check() {
-		if(this.isThereVirtualwall()) {
-			 theCtrl.raiseThereIsAnObstacle();
-		}
-	}
-	
-	public void turning() {
-		this.turn(Math.PI/4);
-		
 	}
 
 	
@@ -290,6 +296,7 @@ public class PolyCreateControler extends Supervisor {
 		
 		System.out.println("let's start");
 		PolyCreateControler controler = new PolyCreateControler();
+		controler.check();
 
 
 		/*try {
