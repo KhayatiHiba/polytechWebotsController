@@ -126,6 +126,10 @@ public class PolyCreateControler extends Supervisor {
 		rightBumper = createTouchSensor("bumper_right");
 		leftBumper.enable(timestep);
 		rightBumper.enable(timestep);
+		
+		thereIsAnObstacle  = false;
+		thereIsNoObstacle = true;
+	
 
 		leftCliffSensor = createDistanceSensor("cliff_left");
 		rightCliffSensor = createDistanceSensor("cliff_right");
@@ -189,14 +193,12 @@ public class PolyCreateControler extends Supervisor {
 	}
 
 	public boolean isThereCollisionAtLeft() {
-		collisionLeft = leftBumper.getValue() != 0.0;
-		return collisionLeft;
+		return leftBumper.getValue() != 0.0;
 		
 	}
 
 	public boolean isThereCollisionAtRight() {
-		collisionRight = (rightBumper.getValue() != 0.0);
-		return collisionRight;
+		return (rightBumper.getValue() != 0.0);
 	}
 
 	public void flushIRReceiver() {
@@ -205,8 +207,8 @@ public class PolyCreateControler extends Supervisor {
 	}
 
 	public boolean isThereVirtualwall() {
-		virtualWall = (receiver.getQueueLength() > 0);
-		return virtualWall;
+		return (receiver.getQueueLength() > 0);
+		
 	}
 	
 	public void goForward() {
