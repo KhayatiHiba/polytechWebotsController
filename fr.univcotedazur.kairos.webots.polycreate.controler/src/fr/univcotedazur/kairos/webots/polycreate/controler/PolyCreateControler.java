@@ -198,7 +198,7 @@ public class PolyCreateControler extends Supervisor {
 	}
 		
 	public void turning() {
-		this.turn(Math.PI/4);
+		this.turn(Math.PI);
 	}
 
 	public void openGripper() {
