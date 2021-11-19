@@ -98,6 +98,7 @@ public class PolyCreateControler extends Supervisor {
 
 	//added modification
 	public Statechart2 theCtrl;
+	private boolean donotturn = true;
 
 
 
@@ -177,6 +178,8 @@ public class PolyCreateControler extends Supervisor {
 		theCtrl.getTurn().subscribe( new MyObserverTurn(this));
 		theCtrl.getMoveFront().subscribe( new MyObserverMoveFront(this));
 		theCtrl.getCheck().subscribe(new MyObserverCheck(this));
+		theCtrl.getMoveBack().subscribe(new MyObserverMoveBack(this));
+	
 		
 		theCtrl.enter();
 
@@ -197,12 +200,15 @@ public class PolyCreateControler extends Supervisor {
 	
 	public void check() {
 		if(this.isThereVirtualwall()) {
-			theCtrl.raiseThereIsAnObstacle();
+			theCtrl.raiseThereIsAVirtualWall();
+			//theCtrl.raiseThereIsAnObstacle();
+			
 		}
-		else if((this.isThereCollisionAtLeft())) {
+		else if(this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() < 250) {
 			theCtrl.raiseThereIsAnObstacle();
+			
 		}
-		else if((this.isThereCollisionAtRight())) {
+		else if(this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() < 250 || this.frontDistanceSensor.getValue() < 250) {
 			theCtrl.raiseThereIsAnObstacle();
 		}
 		else if(!(this.isThereVirtualwall())) {
@@ -211,7 +217,7 @@ public class PolyCreateControler extends Supervisor {
 	}
 		
 	public void dodgeObstacle() {
-		this.turn(Math.PI/9);
+		this.turn(Math.PI/2);
 	}
 	
 
@@ -248,7 +254,7 @@ public class PolyCreateControler extends Supervisor {
 	}
 
 	public boolean isThereVirtualwall() {
-		return (receiver.getQueueLength() > 0);
+		return (receiver.getQueueLength() > 1);
 		
 	}
 	
@@ -270,7 +276,9 @@ public class PolyCreateControler extends Supervisor {
 	public void passiveWait(double sec) {
 		double start_time = getTime();
 		do {
-			step(timestep);
+			if(donotturn ) {
+				step(timestep);
+			}
 		} while (start_time + sec > getTime());
 	}
 
@@ -279,10 +287,11 @@ public class PolyCreateControler extends Supervisor {
 	}
 
 	public void turn(double angle) {
+		donotturn = false;
 		stop();
+		step(timestep);
 		double l_offset = leftSensor.getValue();
 		double r_offset = rightSensor.getValue();
-		step(timestep);
 		double neg = (angle < 0.0) ? -1.0 : 1.0;
 		leftMotor.setVelocity(neg * HALF_SPEED);
 		rightMotor.setVelocity(-neg * HALF_SPEED);
@@ -297,6 +306,8 @@ public class PolyCreateControler extends Supervisor {
 		} while (orientation < neg * angle);
 		stop();
 		step(timestep);
+		donotturn = true;
+
 	}
 
 	public double[] getPosition() {
