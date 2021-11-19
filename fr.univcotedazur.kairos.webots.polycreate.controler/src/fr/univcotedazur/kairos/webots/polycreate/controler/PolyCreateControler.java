@@ -179,6 +179,8 @@ public class PolyCreateControler extends Supervisor {
 		theCtrl.getMoveFront().subscribe( new MyObserverMoveFront(this));
 		theCtrl.getCheck().subscribe(new MyObserverCheck(this));
 		theCtrl.getMoveBack().subscribe(new MyObserverMoveBack(this));
+		theCtrl.getTurn().subscribe(new MyObserverOfObject(this));
+
 	
 		
 		theCtrl.enter();
@@ -201,23 +203,32 @@ public class PolyCreateControler extends Supervisor {
 	public void check() {
 		if(this.isThereVirtualwall()) {
 			theCtrl.raiseThereIsAVirtualWall();
-			//theCtrl.raiseThereIsAnObstacle();
-			
 		}
-		else if(this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() < 250) {
+		else if(this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() < 50) {
 			theCtrl.raiseThereIsAnObstacle();
 			
 		}
-		else if(this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() < 250 || this.frontDistanceSensor.getValue() < 250) {
+		else if(this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() < 50 || this.frontDistanceSensor.getValue() < 50) {
 			theCtrl.raiseThereIsAnObstacle();
 		}
 		else if(!(this.isThereVirtualwall())) {
 			theCtrl.raiseThereIsNoObstacle();
 		}
+		else if(this.frontCamera.getRecognitionObjects().length > 0) {
+			theCtrl.raiseThereIsAnObstacle();
+		}
+		else if( this.checkFrontBlocage()){
+			theCtrl.raiseMoveBack();
+		}
 	}
 		
+	public boolean checkFrontBlocage() {
+		 return this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() !=0 ||
+				this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() !=0 || this.frontDistanceSensor.getValue() != 0 ;
+	}
+	
 	public void dodgeObstacle() {
-		this.turn(Math.PI/2);
+		this.turn(Math.PI/6);
 	}
 	
 
@@ -240,12 +251,12 @@ public class PolyCreateControler extends Supervisor {
 	}
 
 	public boolean isThereCollisionAtLeft() {
-		return leftBumper.getValue() != 0.0;
+		return leftBumper.getValue() != 0.0 ;
 		
 	}
 
 	public boolean isThereCollisionAtRight() {
-		return (rightBumper.getValue() != 0.0);
+		return (rightBumper.getValue() != 0.0 );
 	}
 
 	public void flushIRReceiver() {

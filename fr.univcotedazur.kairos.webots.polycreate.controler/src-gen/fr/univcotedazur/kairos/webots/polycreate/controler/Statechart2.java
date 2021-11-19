@@ -14,6 +14,9 @@ public class Statechart2 implements IStatemachine, ITimed {
 		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVEFRONT,
 		MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING,
 		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVEBACK,
+		MAIN_REGION_ISEEANOBJECT,
+		MAIN_REGION_ISEEANOBJECT_OBJECT_OBJECTIDENTIFY,
+		MAIN_REGION_ISEEANOBJECT_OBJECT_GRIPPERFACEOBJECT,
 		$NULLSTATE$
 	};
 	
@@ -21,7 +24,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	private ITimerService timerService;
 	
-	private final boolean[] timeEvents = new boolean[3];
+	private final boolean[] timeEvents = new boolean[4];
 	
 	private Queue<Runnable> inEventQueue = new LinkedList<Runnable>();
 	private boolean isExecuting;
@@ -88,9 +91,11 @@ public class Statechart2 implements IStatemachine, ITimed {
 		thereIsAnObstacle = false;
 		thereIsNoObstacle = false;
 		thereIsAVirtualWall = false;
+		thereIsAnObject = false;
 		timeEvents[0] = false;
 		timeEvents[1] = false;
 		timeEvents[2] = false;
+		timeEvents[3] = false;
 	}
 	
 	private void microStep() {
@@ -103,6 +108,12 @@ public class Statechart2 implements IStatemachine, ITimed {
 			break;
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVEBACK:
 			main_region_robot_is_moving_main_moveBack_react(-1);
+			break;
+		case MAIN_REGION_ISEEANOBJECT_OBJECT_OBJECTIDENTIFY:
+			main_region_ISeeAnObject_object_ObjectIdentify_react(-1);
+			break;
+		case MAIN_REGION_ISEEANOBJECT_OBJECT_GRIPPERFACEOBJECT:
+			main_region_ISeeAnObject_object_gripperFaceObject_react(-1);
 			break;
 		default:
 			break;
@@ -127,7 +138,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 			clearInEvents();
 			
 			nextEvent();
-		} while ((((((thereIsAnObstacle || thereIsNoObstacle) || thereIsAVirtualWall) || timeEvents[0]) || timeEvents[1]) || timeEvents[2]));
+		} while ((((((((thereIsAnObstacle || thereIsNoObstacle) || thereIsAVirtualWall) || thereIsAnObject) || timeEvents[0]) || timeEvents[1]) || timeEvents[2]) || timeEvents[3]));
 		
 		isExecuting = false;
 	}
@@ -153,6 +164,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 			return stateVector[0] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING;
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVEBACK:
 			return stateVector[0] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVEBACK;
+		case MAIN_REGION_ISEEANOBJECT:
+			return stateVector[0].ordinal() >= State.
+					MAIN_REGION_ISEEANOBJECT.ordinal()&& stateVector[0].ordinal() <= State.MAIN_REGION_ISEEANOBJECT_OBJECT_GRIPPERFACEOBJECT.ordinal();
+		case MAIN_REGION_ISEEANOBJECT_OBJECT_OBJECTIDENTIFY:
+			return stateVector[0] == State.MAIN_REGION_ISEEANOBJECT_OBJECT_OBJECTIDENTIFY;
+		case MAIN_REGION_ISEEANOBJECT_OBJECT_GRIPPERFACEOBJECT:
+			return stateVector[0] == State.MAIN_REGION_ISEEANOBJECT_OBJECT_GRIPPERFACEOBJECT;
 		default:
 			return false;
 		}
@@ -200,6 +218,16 @@ public class Statechart2 implements IStatemachine, ITimed {
 	public void raiseThereIsAVirtualWall() {
 		inEventQueue.add(() -> {
 			thereIsAVirtualWall = true;
+		});
+		runCycle();
+	}
+	
+	private boolean thereIsAnObject;
+	
+	
+	public void raiseThereIsAnObject() {
+		inEventQueue.add(() -> {
+			thereIsAnObject = true;
 		});
 		runCycle();
 	}
@@ -260,6 +288,48 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return moveBackObservable;
 	}
 	
+	private boolean stop;
+	
+	
+	protected void raiseStop() {
+		stop = true;
+		stopObservable.next(null);
+	}
+	
+	private Observable<Void> stopObservable = new Observable<Void>();
+	
+	public Observable<Void> getStop() {
+		return stopObservable;
+	}
+	
+	private boolean turnRound;
+	
+	
+	protected void raiseTurnRound() {
+		turnRound = true;
+		turnRoundObservable.next(null);
+	}
+	
+	private Observable<Void> turnRoundObservable = new Observable<Void>();
+	
+	public Observable<Void> getTurnRound() {
+		return turnRoundObservable;
+	}
+	
+	private boolean checkGripper;
+	
+	
+	protected void raiseCheckGripper() {
+		checkGripper = true;
+		checkGripperObservable.next(null);
+	}
+	
+	private Observable<Void> checkGripperObservable = new Observable<Void>();
+	
+	public Observable<Void> getCheckGripper() {
+		return checkGripperObservable;
+	}
+	
 	/* Entry action for state 'moveFront'. */
 	private void entryAction_main_region_robot_is_moving_main_moveFront() {
 		timerService.setTimer(this, 0, 300, true);
@@ -276,9 +346,21 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Entry action for state 'moveBack'. */
 	private void entryAction_main_region_robot_is_moving_main_moveBack() {
-		timerService.setTimer(this, 2, 300, false);
+		timerService.setTimer(this, 2, 1000, false);
 		
 		raiseMoveBack();
+	}
+	
+	/* Entry action for state 'ObjectIdentify'. */
+	private void entryAction_main_region_ISeeAnObject_object_ObjectIdentify() {
+		timerService.setTimer(this, 3, 500, false);
+		
+		raiseStop();
+	}
+	
+	/* Entry action for state 'gripperFaceObject'. */
+	private void entryAction_main_region_ISeeAnObject_object_gripperFaceObject() {
+		raiseCheckGripper();
 	}
 	
 	/* Exit action for state 'moveFront'. */
@@ -294,6 +376,11 @@ public class Statechart2 implements IStatemachine, ITimed {
 	/* Exit action for state 'moveBack'. */
 	private void exitAction_main_region_robot_is_moving_main_moveBack() {
 		timerService.unsetTimer(this, 2);
+	}
+	
+	/* Exit action for state 'ObjectIdentify'. */
+	private void exitAction_main_region_ISeeAnObject_object_ObjectIdentify() {
+		timerService.unsetTimer(this, 3);
 	}
 	
 	/* 'default' enter sequence for state robot is moving */
@@ -319,6 +406,23 @@ public class Statechart2 implements IStatemachine, ITimed {
 		stateVector[0] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVEBACK;
 	}
 	
+	/* 'default' enter sequence for state ISeeAnObject */
+	private void enterSequence_main_region_ISeeAnObject_default() {
+		enterSequence_main_region_ISeeAnObject_object_default();
+	}
+	
+	/* 'default' enter sequence for state ObjectIdentify */
+	private void enterSequence_main_region_ISeeAnObject_object_ObjectIdentify_default() {
+		entryAction_main_region_ISeeAnObject_object_ObjectIdentify();
+		stateVector[0] = State.MAIN_REGION_ISEEANOBJECT_OBJECT_OBJECTIDENTIFY;
+	}
+	
+	/* 'default' enter sequence for state gripperFaceObject */
+	private void enterSequence_main_region_ISeeAnObject_object_gripperFaceObject_default() {
+		entryAction_main_region_ISeeAnObject_object_gripperFaceObject();
+		stateVector[0] = State.MAIN_REGION_ISEEANOBJECT_OBJECT_GRIPPERFACEOBJECT;
+	}
+	
 	/* 'default' enter sequence for region main region */
 	private void enterSequence_main_region_default() {
 		react_main_region__entry_Default();
@@ -327,6 +431,16 @@ public class Statechart2 implements IStatemachine, ITimed {
 	/* 'default' enter sequence for region main */
 	private void enterSequence_main_region_robot_is_moving_main_default() {
 		react_main_region_robot_is_moving_main__entry_Default();
+	}
+	
+	/* 'default' enter sequence for region object */
+	private void enterSequence_main_region_ISeeAnObject_object_default() {
+		react_main_region_ISeeAnObject_object__entry_Default();
+	}
+	
+	/* Default exit sequence for state robot is moving */
+	private void exitSequence_main_region_robot_is_moving() {
+		exitSequence_main_region_robot_is_moving_main();
 	}
 	
 	/* Default exit sequence for state moveFront */
@@ -350,8 +464,43 @@ public class Statechart2 implements IStatemachine, ITimed {
 		exitAction_main_region_robot_is_moving_main_moveBack();
 	}
 	
+	/* Default exit sequence for state ObjectIdentify */
+	private void exitSequence_main_region_ISeeAnObject_object_ObjectIdentify() {
+		stateVector[0] = State.$NULLSTATE$;
+		
+		exitAction_main_region_ISeeAnObject_object_ObjectIdentify();
+	}
+	
+	/* Default exit sequence for state gripperFaceObject */
+	private void exitSequence_main_region_ISeeAnObject_object_gripperFaceObject() {
+		stateVector[0] = State.$NULLSTATE$;
+	}
+	
 	/* Default exit sequence for region main region */
 	private void exitSequence_main_region() {
+		switch (stateVector[0]) {
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVEFRONT:
+			exitSequence_main_region_robot_is_moving_main_moveFront();
+			break;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING:
+			exitSequence_main_region_robot_is_moving_main_turning();
+			break;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVEBACK:
+			exitSequence_main_region_robot_is_moving_main_moveBack();
+			break;
+		case MAIN_REGION_ISEEANOBJECT_OBJECT_OBJECTIDENTIFY:
+			exitSequence_main_region_ISeeAnObject_object_ObjectIdentify();
+			break;
+		case MAIN_REGION_ISEEANOBJECT_OBJECT_GRIPPERFACEOBJECT:
+			exitSequence_main_region_ISeeAnObject_object_gripperFaceObject();
+			break;
+		default:
+			break;
+		}
+	}
+	
+	/* Default exit sequence for region main */
+	private void exitSequence_main_region_robot_is_moving_main() {
 		switch (stateVector[0]) {
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVEFRONT:
 			exitSequence_main_region_robot_is_moving_main_moveFront();
@@ -377,6 +526,11 @@ public class Statechart2 implements IStatemachine, ITimed {
 		enterSequence_main_region_robot_is_moving_main_moveFront_default();
 	}
 	
+	/* Default react sequence for initial entry  */
+	private void react_main_region_ISeeAnObject_object__entry_Default() {
+		enterSequence_main_region_ISeeAnObject_object_ObjectIdentify_default();
+	}
+	
 	private long react(long transitioned_before) {
 		return transitioned_before;
 	}
@@ -385,6 +539,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
+			if (thereIsAnObject) {
+				exitSequence_main_region_robot_is_moving();
+				enterSequence_main_region_ISeeAnObject_default();
+				react(0);
+				
+				transitioned_after = 0;
+			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
@@ -399,12 +560,20 @@ public class Statechart2 implements IStatemachine, ITimed {
 		if (transitioned_after<0) {
 			if (thereIsAnObstacle) {
 				exitSequence_main_region_robot_is_moving_main_moveFront();
-				raiseTurn();
-				
 				enterSequence_main_region_robot_is_moving_main_turning_default();
 				main_region_robot_is_moving_react(0);
 				
 				transitioned_after = 0;
+			} else {
+				if (thereIsAVirtualWall) {
+					exitSequence_main_region_robot_is_moving_main_moveFront();
+					raiseTurn();
+					
+					enterSequence_main_region_robot_is_moving_main_moveBack_default();
+					main_region_robot_is_moving_react(0);
+					
+					transitioned_after = 0;
+				}
 			}
 		}
 		/* If no transition was taken then execute local reactions */
@@ -428,7 +597,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 				
 				transitioned_after = 0;
 			} else {
-				if (thereIsAVirtualWall) {
+				if (thereIsAnObstacle) {
 					exitSequence_main_region_robot_is_moving_main_turning();
 					raiseTurn();
 					
@@ -464,6 +633,51 @@ public class Statechart2 implements IStatemachine, ITimed {
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
 			transitioned_after = main_region_robot_is_moving_react(transitioned_before);
+		}
+		return transitioned_after;
+	}
+	
+	private long main_region_ISeeAnObject_react(long transitioned_before) {
+		long transitioned_after = transitioned_before;
+		
+		if (transitioned_after<0) {
+		}
+		/* If no transition was taken then execute local reactions */
+		if (transitioned_after==transitioned_before) {
+			transitioned_after = react(transitioned_before);
+		}
+		return transitioned_after;
+	}
+	
+	private long main_region_ISeeAnObject_object_ObjectIdentify_react(long transitioned_before) {
+		long transitioned_after = transitioned_before;
+		
+		if (transitioned_after<0) {
+			if (timeEvents[3]) {
+				exitSequence_main_region_ISeeAnObject_object_ObjectIdentify();
+				raiseTurnRound();
+				
+				enterSequence_main_region_ISeeAnObject_object_gripperFaceObject_default();
+				main_region_ISeeAnObject_react(0);
+				
+				transitioned_after = 0;
+			}
+		}
+		/* If no transition was taken then execute local reactions */
+		if (transitioned_after==transitioned_before) {
+			transitioned_after = main_region_ISeeAnObject_react(transitioned_before);
+		}
+		return transitioned_after;
+	}
+	
+	private long main_region_ISeeAnObject_object_gripperFaceObject_react(long transitioned_before) {
+		long transitioned_after = transitioned_before;
+		
+		if (transitioned_after<0) {
+		}
+		/* If no transition was taken then execute local reactions */
+		if (transitioned_after==transitioned_before) {
+			transitioned_after = main_region_ISeeAnObject_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
