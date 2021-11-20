@@ -179,7 +179,7 @@ public class PolyCreateControler extends Supervisor {
 		theCtrl.getMoveFront().subscribe( new MyObserverMoveFront(this));
 		theCtrl.getCheck().subscribe(new MyObserverCheck(this));
 		theCtrl.getMoveBack().subscribe(new MyObserverMoveBack(this));
-		theCtrl.getTurn().subscribe(new MyObserverOfObject(this));
+		theCtrl.getTurn().subscribe(new MyObserverDodgeObject(this));
 
 	
 		
@@ -202,33 +202,33 @@ public class PolyCreateControler extends Supervisor {
 	
 	public void check() {
 		if(this.isThereVirtualwall()) {
+			System.out.println("a virtual wall");
 			theCtrl.raiseThereIsAVirtualWall();
 		}
-		else if(this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() < 50) {
+		else if(this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() < 150) {
 			theCtrl.raiseThereIsAnObstacle();
 			
 		}
-		else if(this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() < 50 || this.frontDistanceSensor.getValue() < 50) {
+		else if(this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() < 150) {
 			theCtrl.raiseThereIsAnObstacle();
 		}
 		else if(!(this.isThereVirtualwall())) {
 			theCtrl.raiseThereIsNoObstacle();
 		}
-		else if(this.frontCamera.getRecognitionObjects().length > 0) {
-			theCtrl.raiseThereIsAnObstacle();
+		else if(this.frontCamera.getRecognitionObjects().length > 0 || this.frontCamera.getRecognitionObjects()[0].getPosition()[0] <150.0) {
+			theCtrl.raiseThereIsAnObject();
 		}
-		else if( this.checkFrontBlocage()){
+		else if( this.frontDistanceSensor.getValue() > 150) {
 			theCtrl.raiseMoveBack();
 		}
 	}
-		
-	public boolean checkFrontBlocage() {
-		 return this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() !=0 ||
-				this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() !=0 || this.frontDistanceSensor.getValue() != 0 ;
-	}
 	
 	public void dodgeObstacle() {
-		this.turn(Math.PI/6);
+		this.turn(Math.PI/12);
+	}
+	
+	public void dodgeObject() {
+		this.turn(Math.PI/12);
 	}
 	
 
