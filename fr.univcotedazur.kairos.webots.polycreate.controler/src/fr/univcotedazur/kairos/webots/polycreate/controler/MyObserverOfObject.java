@@ -2,13 +2,13 @@ package fr.univcotedazur.kairos.webots.polycreate.controler;
 
 import com.yakindu.core.rx.Observer;
 
-public class MyObserverDodgeObject implements Observer {
+public class MyObserverOfObject implements Observer {
 
 //attribut IHM
 	PolyCreateControler theController;
 	
 	//constructeur pour l'IHM
-	public MyObserverDodgeObject(PolyCreateControler controller) {
+	public MyObserverOfObject(PolyCreateControler controller) {
 		theController = controller;
 	}
 	
@@ -16,7 +16,7 @@ public class MyObserverDodgeObject implements Observer {
 	public void next(Object value) {
 		// TODO Auto-generated method stub
 		System.out.println("I saw an Object");
-		theController.dodgeObject();
+		theController.dodgeObstacle();
 		
 	}
 }
