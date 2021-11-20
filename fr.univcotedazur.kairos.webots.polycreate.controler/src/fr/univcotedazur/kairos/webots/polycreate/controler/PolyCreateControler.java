@@ -179,8 +179,7 @@ public class PolyCreateControler extends Supervisor {
 		theCtrl.getMoveFront().subscribe( new MyObserverMoveFront(this));
 		theCtrl.getCheck().subscribe(new MyObserverCheck(this));
 		theCtrl.getMoveBack().subscribe(new MyObserverMoveBack(this));
-		theCtrl.getTurn().subscribe(new MyObserverOfObject(this));
-
+		theCtrl.getTurnObject().subscribe(new MyObserverTurnObject(this));
 	
 		
 		theCtrl.enter();
@@ -202,33 +201,42 @@ public class PolyCreateControler extends Supervisor {
 	
 	public void check() {
 		if(this.isThereVirtualwall()) {
+			System.out.println("OUPS! a virtual wall");
 			theCtrl.raiseThereIsAVirtualWall();
 		}
-		else if(this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() < 50) {
+		else if(this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() < 200) {
+			System.out.println("OUPS! obstacle left" + this.leftCliffSensor.getValue() );
 			theCtrl.raiseThereIsAnObstacle();
 			
 		}
-		else if(this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() < 50 || this.frontDistanceSensor.getValue() < 50) {
+		else if(this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() < 200) {
+			System.out.println("OUPS! obstacle right "+ this.leftCliffSensor.getValue());
 			theCtrl.raiseThereIsAnObstacle();
 		}
 		else if(!(this.isThereVirtualwall())) {
 			theCtrl.raiseThereIsNoObstacle();
 		}
-		else if(this.frontCamera.getRecognitionObjects().length > 0) {
-			theCtrl.raiseThereIsAnObstacle();
+		/*else if(this.frontCamera.getRecognitionObjects().length > 0){
+			System.out.println("OUPS! an object");
+			theCtrl.raiseThereIsAnObject();
+		}*/
+		else if( this.frontDistanceSensor.getValue() < 200){
+			System.out.println("OUPS! a front obstacle");
+			theCtrl.raiseThereIsAFrontObstacle();
 		}
-		else if( this.checkFrontBlocage()){
-			theCtrl.raiseMoveBack();
+		else if (this.frontRightCliffSensor.getValue() != 0 || this.frontLeftCliffSensor.getValue() != 0 || this.leftCliffSensor.getValue() != 0 || this.rightCliffSensor.getValue() != 0) {
+			System.out.println("OUPS! a gap"+ this.leftCliffSensor.getValue());
+			theCtrl.raiseThereIsAGapDown();
 		}
 	}
 		
-	public boolean checkFrontBlocage() {
-		 return this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() !=0 ||
-				this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() !=0 || this.frontDistanceSensor.getValue() != 0 ;
-	}
 	
 	public void dodgeObstacle() {
 		this.turn(Math.PI/6);
+	}
+	
+	public void dodgeObjects() {
+		this.turn(Math.PI/12);
 	}
 	
 
