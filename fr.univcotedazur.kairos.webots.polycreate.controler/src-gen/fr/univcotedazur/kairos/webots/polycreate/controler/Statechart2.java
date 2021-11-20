@@ -369,7 +369,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Entry action for state 'gap down'. */
 	private void entryAction_main_region_robot_is_moving_main_gap_down() {
-		timerService.setTimer(this, 3, 1000, false);
+		timerService.setTimer(this, 3, 1500, false);
 		
 		raiseMoveBack();
 	}
@@ -594,18 +594,12 @@ public class Statechart2 implements IStatemachine, ITimed {
 				} else {
 					if (thereIsAGapDown) {
 						exitSequence_main_region_robot_is_moving_main_move();
+						raiseMoveBack();
+						
 						enterSequence_main_region_robot_is_moving_main_gap_down_default();
 						main_region_robot_is_moving_react(0);
 						
 						transitioned_after = 0;
-					} else {
-						if (thereIsAVirtualWall) {
-							exitSequence_main_region_robot_is_moving_main_move_r1_moveFront();
-							enterSequence_main_region_robot_is_moving_main_move_r1_moveFront_default();
-							main_region_robot_is_moving_main_move_react(0);
-							
-							transitioned_after = 0;
-						}
 					}
 				}
 			}

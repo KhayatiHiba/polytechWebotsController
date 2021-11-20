@@ -174,6 +174,12 @@ public class PolyCreateControler extends Supervisor {
 		gps = createGPS("gps");
 		gps.enable(timestep);
 		
+		//modificatins
+		double leftsensor = this.leftCliffSensor.getValue();
+		double frontsensor = this.frontRightCliffSensor.getValue();
+		double rightsensr = this.rightCliffSensor.getValue();
+		double front = this.frontLeftCliffSensor.getValue();
+		
 		//observeurs
 		theCtrl.getTurn().subscribe( new MyObserverTurn(this));
 		theCtrl.getMoveFront().subscribe( new MyObserverMoveFront(this));
@@ -224,10 +230,13 @@ public class PolyCreateControler extends Supervisor {
 			System.out.println("OUPS! a front obstacle");
 			theCtrl.raiseThereIsAFrontObstacle();
 		}
-		else if (this.frontRightCliffSensor.getValue() != 0 || this.frontLeftCliffSensor.getValue() != 0 || this.leftCliffSensor.getValue() != 0 || this.rightCliffSensor.getValue() != 0) {
-			System.out.println("OUPS! a gap"+ this.leftCliffSensor.getValue());
+		if (this.frontRightCliffSensor.getValue() == 0 || this.frontLeftCliffSensor.getValue() == 0 || 
+				this.leftCliffSensor.getValue() == 0 || this.rightCliffSensor.getValue() == 0
+				|| this.frontDistanceSensor.getValue() < 200){
+			System.out.println("OUPS! a gap front ");
 			theCtrl.raiseThereIsAGapDown();
 		}
+		
 	}
 		
 	
