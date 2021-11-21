@@ -553,7 +553,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 				
 				transitioned_after = 0;
 			} else {
-				if (thereIsAnObstacle) {
+				if ((thereIsAnObstacle || thereIsAnObject)) {
 					exitSequence_main_region_robot_is_moving_main_move();
 					enterSequence_main_region_robot_is_moving_main_turning_default();
 					main_region_robot_is_moving_react(0);
@@ -594,8 +594,6 @@ public class Statechart2 implements IStatemachine, ITimed {
 		if (transitioned_after<0) {
 			if (thereIsAFrontObstacle) {
 				exitSequence_main_region_robot_is_moving_main_move_r1_moveFront();
-				raiseTurn();
-				
 				enterSequence_main_region_robot_is_moving_main_move_r1_moveBack_default();
 				main_region_robot_is_moving_main_move_react(0);
 				
@@ -623,7 +621,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 				
 				transitioned_after = 0;
 			} else {
-				if (thereIsAnObstacle) {
+				if ((thereIsAnObstacle || thereIsAnObject)) {
 					exitSequence_main_region_robot_is_moving_main_turning();
 					enterSequence_main_region_robot_is_moving_main_move_r1_moveBack_default();
 					main_region_robot_is_moving_react(0);

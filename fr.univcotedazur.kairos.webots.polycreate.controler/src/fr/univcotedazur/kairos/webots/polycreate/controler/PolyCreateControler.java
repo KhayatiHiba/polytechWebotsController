@@ -273,7 +273,7 @@ public class PolyCreateControler extends Supervisor {
 		}
 		else if(this.isThereVirtualwall()) {
 			System.out.println("OUPS! a virtual wall");
-			theCtrl.raiseThereIsAVirtualWall();
+			theCtrl.raiseThereIsAVirtualWall();/// cas pas encore géré totalement **********
 		}
 	}
 	public void gapAndStairsCheck() {
@@ -285,11 +285,11 @@ public class PolyCreateControler extends Supervisor {
 		}
 	}
 	public void CollisionCheck() {
-		if(this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() < 200) {
+		if(this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() < 250) {
 			System.out.println("OUPS! obstacle left" );
 			theCtrl.raiseThereIsAnObstacle();	
 		}
-		else if(this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() < 200) {
+		else if(this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() < 250) {
 			System.out.println("OUPS! obstacle right ");
 			theCtrl.raiseThereIsAnObstacle();
 		}
@@ -300,10 +300,13 @@ public class PolyCreateControler extends Supervisor {
 		
 	}
 	public void objectCheck() {
-		/*else if(this.frontCamera.getRecognitionObjects().length > 0){
-		System.out.println("OUPS! an object");
-		theCtrl.raiseThereIsAnObject();
-	}*/
+		if(this.frontCamera.getRecognitionObjects().length > 0) {
+				if(this.closeToObject()) {
+					System.out.println("OUPS! an object");
+					System.out.println("        I saw "+" on front Camera at : "+this.frontCamera.getRecognitionObjects()[0].getPosition()[0]);
+					theCtrl.raiseThereIsAnObject();
+				}
+		}
 	}
 		
 	
@@ -333,6 +336,12 @@ public class PolyCreateControler extends Supervisor {
 	public boolean isThereVirtualwall() {
 		return (receiver.getQueueLength() > 1);
 		
+	}
+	
+	public boolean closeToObject() {
+		double posObj = this.frontCamera.getRecognitionObjects()[0].getPosition()[0];
+		double posRob = this.frontDistanceSensor.getMinValue();
+		return posObj < posRob;
 	}
 
 
