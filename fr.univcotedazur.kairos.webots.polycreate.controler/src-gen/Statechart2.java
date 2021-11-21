@@ -544,6 +544,23 @@ public class Statechart2 implements IStatemachine, ITimed {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
+			if (thereIsAGapDown) {
+				exitSequence_main_region_robot_is_moving_main_move();
+				raiseMoveBack();
+				
+				enterSequence_main_region_robot_is_moving_main_gap_down_default();
+				main_region_robot_is_moving_react(0);
+				
+				transitioned_after = 0;
+			} else {
+				if (thereIsAnObstacle) {
+					exitSequence_main_region_robot_is_moving_main_move();
+					enterSequence_main_region_robot_is_moving_main_turning_default();
+					main_region_robot_is_moving_react(0);
+					
+					transitioned_after = 0;
+				}
+			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
@@ -557,9 +574,9 @@ public class Statechart2 implements IStatemachine, ITimed {
 		
 		if (transitioned_after<0) {
 			if (timeEvents[0]) {
-				exitSequence_main_region_robot_is_moving_main_move_r1_moveBack();
-				enterSequence_main_region_robot_is_moving_main_move_r1_moveFront_default();
-				main_region_robot_is_moving_main_move_react(0);
+				exitSequence_main_region_robot_is_moving_main_move();
+				enterSequence_main_region_robot_is_moving_main_turning_default();
+				main_region_robot_is_moving_react(0);
 				
 				transitioned_after = 0;
 			}
@@ -575,32 +592,14 @@ public class Statechart2 implements IStatemachine, ITimed {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
-			if (thereIsAnObstacle) {
-				exitSequence_main_region_robot_is_moving_main_move();
-				enterSequence_main_region_robot_is_moving_main_turning_default();
-				main_region_robot_is_moving_react(0);
+			if (thereIsAFrontObstacle) {
+				exitSequence_main_region_robot_is_moving_main_move_r1_moveFront();
+				raiseTurn();
+				
+				enterSequence_main_region_robot_is_moving_main_move_r1_moveBack_default();
+				main_region_robot_is_moving_main_move_react(0);
 				
 				transitioned_after = 0;
-			} else {
-				if (thereIsAFrontObstacle) {
-					exitSequence_main_region_robot_is_moving_main_move_r1_moveFront();
-					raiseTurn();
-					
-					enterSequence_main_region_robot_is_moving_main_move_r1_moveBack_default();
-					main_region_robot_is_moving_main_move_react(0);
-					
-					transitioned_after = 0;
-				} else {
-					if (thereIsAGapDown) {
-						exitSequence_main_region_robot_is_moving_main_move();
-						raiseMoveBack();
-						
-						enterSequence_main_region_robot_is_moving_main_gap_down_default();
-						main_region_robot_is_moving_react(0);
-						
-						transitioned_after = 0;
-					}
-				}
 			}
 		}
 		/* If no transition was taken then execute local reactions */

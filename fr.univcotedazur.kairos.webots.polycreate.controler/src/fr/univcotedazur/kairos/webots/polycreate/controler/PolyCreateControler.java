@@ -174,11 +174,6 @@ public class PolyCreateControler extends Supervisor {
 		gps = createGPS("gps");
 		gps.enable(timestep);
 		
-		//modificatins
-		double leftsensor = this.leftCliffSensor.getValue();
-		double frontsensor = this.frontRightCliffSensor.getValue();
-		double rightsensr = this.rightCliffSensor.getValue();
-		double front = this.frontLeftCliffSensor.getValue();
 		
 		//observeurs
 		theCtrl.getTurn().subscribe( new MyObserverTurn(this));
@@ -190,7 +185,7 @@ public class PolyCreateControler extends Supervisor {
 		
 		theCtrl.enter();
 
-		
+		//////////////////////////////////
 		PolyCreateControler ctrl = this;
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{
@@ -202,44 +197,15 @@ public class PolyCreateControler extends Supervisor {
 			}
 		});
 	}
+////////////////////////////////////////
 
-	//graphics and listener settings
-	
+	//////stateChart Methods//////
 	public void check() {
-		if(this.isThereVirtualwall()) {
-			System.out.println("OUPS! a virtual wall");
-			theCtrl.raiseThereIsAVirtualWall();
-		}
-		else if(this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() < 200) {
-			System.out.println("OUPS! obstacle left" + this.leftCliffSensor.getValue() );
-			theCtrl.raiseThereIsAnObstacle();
-			
-		}
-		else if(this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() < 200) {
-			System.out.println("OUPS! obstacle right "+ this.leftCliffSensor.getValue());
-			theCtrl.raiseThereIsAnObstacle();
-		}
-		else if(!(this.isThereVirtualwall())) {
-			theCtrl.raiseThereIsNoObstacle();
-		}
-		/*else if(this.frontCamera.getRecognitionObjects().length > 0){
-			System.out.println("OUPS! an object");
-			theCtrl.raiseThereIsAnObject();
-		}*/
-		else if( this.frontDistanceSensor.getValue() < 200){
-			System.out.println("OUPS! a front obstacle");
-			theCtrl.raiseThereIsAFrontObstacle();
-		}
-		if (this.frontRightCliffSensor.getValue() == 0 || this.frontLeftCliffSensor.getValue() == 0 || 
-				this.leftCliffSensor.getValue() == 0 || this.rightCliffSensor.getValue() == 0
-				|| this.frontDistanceSensor.getValue() < 200){
-			System.out.println("OUPS! a gap front ");
-			theCtrl.raiseThereIsAGapDown();
-		}
-		
+		this.freePathCheck();
+		this.CollisionCheck();
+		this.objectCheck();
+		this.gapAndStairsCheck();
 	}
-		
-	
 	public void dodgeObstacle() {
 		this.turn(Math.PI/6);
 	}
@@ -248,7 +214,21 @@ public class PolyCreateControler extends Supervisor {
 		this.turn(Math.PI/12);
 	}
 	
+	public void goForward() {
+		leftMotor.setVelocity(MAX_SPEED);
+		rightMotor.setVelocity(MAX_SPEED);
+	}
 
+	public void goBackward() {
+		leftMotor.setVelocity(-HALF_SPEED);
+		rightMotor.setVelocity(-HALF_SPEED);
+	}
+
+	public void stop() {
+		leftMotor.setVelocity(NULL_SPEED);
+		rightMotor.setVelocity(NULL_SPEED);
+	}
+	
 	public void openGripper() {
 		gripMotors[0].setPosition(0.5);
 		gripMotors[1].setPosition(0.5);
@@ -259,6 +239,75 @@ public class PolyCreateControler extends Supervisor {
 		gripMotors[1].setPosition(-0.2);
 	}
 	
+	public void turn(double angle) {
+		donotturn = false;
+		stop();
+		step(timestep);
+		double l_offset = leftSensor.getValue();
+		double r_offset = rightSensor.getValue();
+		double neg = (angle < 0.0) ? -1.0 : 1.0;
+		leftMotor.setVelocity(neg * HALF_SPEED);
+		rightMotor.setVelocity(-neg * HALF_SPEED);
+		double orientation;
+		do {
+			double l = leftSensor.getValue() - l_offset;
+			double r = rightSensor.getValue() - r_offset;
+			double dl = l * WHEEL_RADIUS;                 // distance covered by left wheel in meter
+			double dr = r * WHEEL_RADIUS;                 // distance covered by right wheel in meter
+			orientation = neg * (dl - dr) / AXLE_LENGTH;  // delta orientation in radian
+			step(timestep);
+		} while (orientation < neg * angle);
+		stop();
+		step(timestep);
+		donotturn = true;
+
+	}
+	
+	
+	
+	/////checking methods//////
+	
+	public void freePathCheck() {
+		if(!(this.isThereVirtualwall())) {
+			theCtrl.raiseThereIsNoObstacle();
+		}
+		else if(this.isThereVirtualwall()) {
+			System.out.println("OUPS! a virtual wall");
+			theCtrl.raiseThereIsAVirtualWall();
+		}
+	}
+	public void gapAndStairsCheck() {
+		if (this.frontRightCliffSensor.getValue() == 0 || this.frontLeftCliffSensor.getValue() == 0 || 
+				this.leftCliffSensor.getValue() == 0 || this.rightCliffSensor.getValue() == 0
+				|| this.frontDistanceSensor.getValue() < 200){
+			System.out.println("OUPS! a gap front ");
+			theCtrl.raiseThereIsAGapDown();
+		}
+	}
+	public void CollisionCheck() {
+		if(this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() < 200) {
+			System.out.println("OUPS! obstacle left" );
+			theCtrl.raiseThereIsAnObstacle();	
+		}
+		else if(this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() < 200) {
+			System.out.println("OUPS! obstacle right ");
+			theCtrl.raiseThereIsAnObstacle();
+		}
+		else if( this.frontDistanceSensor.getValue() < 200){
+			System.out.println("OUPS! a front obstacle");
+			theCtrl.raiseThereIsAFrontObstacle();
+		}
+		
+	}
+	public void objectCheck() {
+		/*else if(this.frontCamera.getRecognitionObjects().length > 0){
+		System.out.println("OUPS! an object");
+		theCtrl.raiseThereIsAnObject();
+	}*/
+	}
+		
+	
+	//////helping check methods//////
 	/**
 	 * give the obstacle distance from the gripper sensor. max distance (i.e., no obstacle detected) is 1500
 	 * @return
@@ -285,22 +334,10 @@ public class PolyCreateControler extends Supervisor {
 		return (receiver.getQueueLength() > 1);
 		
 	}
+
+
 	
-	public void goForward() {
-		leftMotor.setVelocity(MAX_SPEED);
-		rightMotor.setVelocity(MAX_SPEED);
-	}
-
-	public void goBackward() {
-		leftMotor.setVelocity(-HALF_SPEED);
-		rightMotor.setVelocity(-HALF_SPEED);
-	}
-
-	public void stop() {
-		leftMotor.setVelocity(NULL_SPEED);
-		rightMotor.setVelocity(NULL_SPEED);
-	}
-
+	///////other methods///////
 	public void passiveWait(double sec) {
 		double start_time = getTime();
 		do {
@@ -314,37 +351,13 @@ public class PolyCreateControler extends Supervisor {
 		return  random.nextDouble();
 	}
 
-	public void turn(double angle) {
-		donotturn = false;
-		stop();
-		step(timestep);
-		double l_offset = leftSensor.getValue();
-		double r_offset = rightSensor.getValue();
-		double neg = (angle < 0.0) ? -1.0 : 1.0;
-		leftMotor.setVelocity(neg * HALF_SPEED);
-		rightMotor.setVelocity(-neg * HALF_SPEED);
-		double orientation;
-		do {
-			double l = leftSensor.getValue() - l_offset;
-			double r = rightSensor.getValue() - r_offset;
-			double dl = l * WHEEL_RADIUS;                 // distance covered by left wheel in meter
-			double dr = r * WHEEL_RADIUS;                 // distance covered by right wheel in meter
-			orientation = neg * (dl - dr) / AXLE_LENGTH;  // delta orientation in radian
-			step(timestep);
-		} while (orientation < neg * angle);
-		stop();
-		step(timestep);
-		donotturn = true;
-
-	}
-
 	public double[] getPosition() {
 		return gps.getValues();
 	}
 
 	
 			
-
+	////////////main///////////
 	public static void main(String[] args) {
 		
 		System.out.println("let's start");
