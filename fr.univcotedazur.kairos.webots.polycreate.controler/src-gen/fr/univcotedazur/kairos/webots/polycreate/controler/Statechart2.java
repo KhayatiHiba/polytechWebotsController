@@ -11,19 +11,23 @@ import java.util.Queue;
 public class Statechart2 implements IStatemachine, ITimed {
 	public enum State {
 		MAIN_REGION_ROBOT_IS_MOVING,
+		MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING,
+		MAIN_REGION_ROBOT_IS_MOVING_MAIN_GAP_DOWN,
 		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE,
 		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEBACK,
 		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT,
-		MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING,
-		MAIN_REGION_ROBOT_IS_MOVING_MAIN_GAP_DOWN,
+		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_CHECKOBJECT,
+		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_ROBOTISSTOPPED,
+		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND,
+		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP,
 		$NULLSTATE$
 	};
 	
-	private final State[] stateVector = new State[1];
+	private final State[] stateVector = new State[2];
 	
 	private ITimerService timerService;
 	
-	private final boolean[] timeEvents = new boolean[4];
+	private final boolean[] timeEvents = new boolean[7];
 	
 	private Queue<Runnable> inEventQueue = new LinkedList<Runnable>();
 	private boolean isExecuting;
@@ -35,8 +39,17 @@ public class Statechart2 implements IStatemachine, ITimed {
 	protected void setIsExecuting(boolean value) {
 		this.isExecuting = value;
 	}
+	private long stateConfVectorPosition;
+	
+	protected long getStateConfVectorPosition() {
+		return stateConfVectorPosition;
+	}
+	
+	protected void setStateConfVectorPosition(long value) {
+		this.stateConfVectorPosition = value;
+	}
 	public Statechart2() {
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 2; i++) {
 			stateVector[i] = State.$NULLSTATE$;
 		}
 		
@@ -75,7 +88,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	 * @see IStatemachine#isActive()
 	 */
 	public boolean isActive() {
-		return stateVector[0] != State.$NULLSTATE$;
+		return stateVector[0] != State.$NULLSTATE$||stateVector[1] != State.$NULLSTATE$;
 	}
 	
 	/** 
@@ -97,24 +110,50 @@ public class Statechart2 implements IStatemachine, ITimed {
 		timeEvents[1] = false;
 		timeEvents[2] = false;
 		timeEvents[3] = false;
+		timeEvents[4] = false;
+		timeEvents[5] = false;
+		timeEvents[6] = false;
 	}
 	
 	private void microStep() {
+		long transitioned = -1;
+		
+		stateConfVectorPosition = 0;
+		
 		switch (stateVector[0]) {
-		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEBACK:
-			main_region_robot_is_moving_main_move_r1_moveBack_react(-1);
-			break;
-		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT:
-			main_region_robot_is_moving_main_move_r1_moveFront_react(-1);
-			break;
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING:
-			main_region_robot_is_moving_main_turning_react(-1);
+			transitioned = main_region_robot_is_moving_main_turning_react(transitioned);
 			break;
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_GAP_DOWN:
-			main_region_robot_is_moving_main_gap_down_react(-1);
+			transitioned = main_region_robot_is_moving_main_gap_down_react(transitioned);
+			break;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEBACK:
+			transitioned = main_region_robot_is_moving_main_move_r1_moveBack_react(transitioned);
+			break;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT:
+			transitioned = main_region_robot_is_moving_main_move_r1_moveFront_react(transitioned);
 			break;
 		default:
 			break;
+		}
+		
+		if (getStateConfVectorPosition()<1) {
+			switch (stateVector[1]) {
+			case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_CHECKOBJECT:
+				transitioned = main_region_robot_is_moving_main_move_objectChecking_checkobject_react(transitioned);
+				break;
+			case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_ROBOTISSTOPPED:
+				transitioned = main_region_robot_is_moving_main_move_objectChecking_robotIsStopped_react(transitioned);
+				break;
+			case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND:
+				transitioned = main_region_robot_is_moving_main_move_objectChecking_turnRound_react(transitioned);
+				break;
+			case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP:
+				transitioned = main_region_robot_is_moving_main_move_objectChecking_readyToGrip_react(transitioned);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 	
@@ -136,7 +175,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 			clearInEvents();
 			
 			nextEvent();
-		} while ((((((((((thereIsAnObstacle || thereIsNoObstacle) || thereIsAFrontObstacle) || thereIsAVirtualWall) || thereIsAnObject) || thereIsAGapDown) || timeEvents[0]) || timeEvents[1]) || timeEvents[2]) || timeEvents[3]));
+		} while (((((((((((((thereIsAnObstacle || thereIsNoObstacle) || thereIsAFrontObstacle) || thereIsAVirtualWall) || thereIsAnObject) || thereIsAGapDown) || timeEvents[0]) || timeEvents[1]) || timeEvents[2]) || timeEvents[3]) || timeEvents[4]) || timeEvents[5]) || timeEvents[6]));
 		
 		isExecuting = false;
 	}
@@ -155,18 +194,26 @@ public class Statechart2 implements IStatemachine, ITimed {
 		switch (state) {
 		case MAIN_REGION_ROBOT_IS_MOVING:
 			return stateVector[0].ordinal() >= State.
-					MAIN_REGION_ROBOT_IS_MOVING.ordinal()&& stateVector[0].ordinal() <= State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_GAP_DOWN.ordinal();
-		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE:
-			return stateVector[0].ordinal() >= State.
-					MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE.ordinal()&& stateVector[0].ordinal() <= State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT.ordinal();
-		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEBACK:
-			return stateVector[0] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEBACK;
-		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT:
-			return stateVector[0] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT;
+					MAIN_REGION_ROBOT_IS_MOVING.ordinal()&& stateVector[0].ordinal() <= State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP.ordinal();
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING:
 			return stateVector[0] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING;
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_GAP_DOWN:
 			return stateVector[0] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_GAP_DOWN;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE:
+			return stateVector[0].ordinal() >= State.
+					MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE.ordinal()&& stateVector[0].ordinal() <= State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP.ordinal();
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEBACK:
+			return stateVector[0] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEBACK;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT:
+			return stateVector[0] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_CHECKOBJECT:
+			return stateVector[1] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_CHECKOBJECT;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_ROBOTISSTOPPED:
+			return stateVector[1] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_ROBOTISSTOPPED;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND:
+			return stateVector[1] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP:
+			return stateVector[1] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP;
 		default:
 			return false;
 		}
@@ -318,18 +365,18 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return stopObservable;
 	}
 	
-	private boolean turnObject;
+	private boolean turnRound;
 	
 	
-	protected void raiseTurnObject() {
-		turnObject = true;
-		turnObjectObservable.next(null);
+	protected void raiseTurnRound() {
+		turnRound = true;
+		turnRoundObservable.next(null);
 	}
 	
-	private Observable<Void> turnObjectObservable = new Observable<Void>();
+	private Observable<Void> turnRoundObservable = new Observable<Void>();
 	
-	public Observable<Void> getTurnObject() {
-		return turnObjectObservable;
+	public Observable<Void> getTurnRound() {
+		return turnRoundObservable;
 	}
 	
 	private boolean checkGripper;
@@ -346,52 +393,87 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return checkGripperObservable;
 	}
 	
-	/* Entry action for state 'moveBack'. */
-	private void entryAction_main_region_robot_is_moving_main_move_r1_moveBack() {
-		timerService.setTimer(this, 0, 1000, false);
-		
-		raiseMoveBack();
-	}
-	
-	/* Entry action for state 'moveFront'. */
-	private void entryAction_main_region_robot_is_moving_main_move_r1_moveFront() {
-		timerService.setTimer(this, 1, 300, true);
-		
-		raiseMoveFront();
-	}
-	
 	/* Entry action for state 'turning'. */
 	private void entryAction_main_region_robot_is_moving_main_turning() {
-		timerService.setTimer(this, 2, 300, true);
+		timerService.setTimer(this, 0, 300, true);
 		
 		raiseTurn();
 	}
 	
 	/* Entry action for state 'gap down'. */
 	private void entryAction_main_region_robot_is_moving_main_gap_down() {
-		timerService.setTimer(this, 3, 1500, false);
+		timerService.setTimer(this, 1, 1500, false);
 		
 		raiseMoveBack();
 	}
 	
-	/* Exit action for state 'moveBack'. */
-	private void exitAction_main_region_robot_is_moving_main_move_r1_moveBack() {
-		timerService.unsetTimer(this, 0);
+	/* Entry action for state 'moveBack'. */
+	private void entryAction_main_region_robot_is_moving_main_move_r1_moveBack() {
+		timerService.setTimer(this, 2, 1000, false);
+		
+		raiseMoveBack();
 	}
 	
-	/* Exit action for state 'moveFront'. */
-	private void exitAction_main_region_robot_is_moving_main_move_r1_moveFront() {
-		timerService.unsetTimer(this, 1);
+	/* Entry action for state 'moveFront'. */
+	private void entryAction_main_region_robot_is_moving_main_move_r1_moveFront() {
+		timerService.setTimer(this, 3, 300, true);
+		
+		raiseMoveFront();
+	}
+	
+	/* Entry action for state 'checkobject'. */
+	private void entryAction_main_region_robot_is_moving_main_move_objectChecking_checkobject() {
+		timerService.setTimer(this, 4, 300, true);
+	}
+	
+	/* Entry action for state 'robotIsStopped'. */
+	private void entryAction_main_region_robot_is_moving_main_move_objectChecking_robotIsStopped() {
+		timerService.setTimer(this, 5, 500, false);
+	}
+	
+	/* Entry action for state 'turnRound'. */
+	private void entryAction_main_region_robot_is_moving_main_move_objectChecking_turnRound() {
+		timerService.setTimer(this, 6, 100, false);
+	}
+	
+	/* Entry action for state 'readyToGrip'. */
+	private void entryAction_main_region_robot_is_moving_main_move_objectChecking_readyToGrip() {
+		raiseStop();
 	}
 	
 	/* Exit action for state 'turning'. */
 	private void exitAction_main_region_robot_is_moving_main_turning() {
-		timerService.unsetTimer(this, 2);
+		timerService.unsetTimer(this, 0);
 	}
 	
 	/* Exit action for state 'gap down'. */
 	private void exitAction_main_region_robot_is_moving_main_gap_down() {
+		timerService.unsetTimer(this, 1);
+	}
+	
+	/* Exit action for state 'moveBack'. */
+	private void exitAction_main_region_robot_is_moving_main_move_r1_moveBack() {
+		timerService.unsetTimer(this, 2);
+	}
+	
+	/* Exit action for state 'moveFront'. */
+	private void exitAction_main_region_robot_is_moving_main_move_r1_moveFront() {
 		timerService.unsetTimer(this, 3);
+	}
+	
+	/* Exit action for state 'checkobject'. */
+	private void exitAction_main_region_robot_is_moving_main_move_objectChecking_checkobject() {
+		timerService.unsetTimer(this, 4);
+	}
+	
+	/* Exit action for state 'robotIsStopped'. */
+	private void exitAction_main_region_robot_is_moving_main_move_objectChecking_robotIsStopped() {
+		timerService.unsetTimer(this, 5);
+	}
+	
+	/* Exit action for state 'turnRound'. */
+	private void exitAction_main_region_robot_is_moving_main_move_objectChecking_turnRound() {
+		timerService.unsetTimer(this, 6);
 	}
 	
 	/* 'default' enter sequence for state robot is moving */
@@ -399,33 +481,66 @@ public class Statechart2 implements IStatemachine, ITimed {
 		enterSequence_main_region_robot_is_moving_main_default();
 	}
 	
-	/* 'default' enter sequence for state move */
-	private void enterSequence_main_region_robot_is_moving_main_move_default() {
-		enterSequence_main_region_robot_is_moving_main_move_r1_default();
-	}
-	
-	/* 'default' enter sequence for state moveBack */
-	private void enterSequence_main_region_robot_is_moving_main_move_r1_moveBack_default() {
-		entryAction_main_region_robot_is_moving_main_move_r1_moveBack();
-		stateVector[0] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEBACK;
-	}
-	
-	/* 'default' enter sequence for state moveFront */
-	private void enterSequence_main_region_robot_is_moving_main_move_r1_moveFront_default() {
-		entryAction_main_region_robot_is_moving_main_move_r1_moveFront();
-		stateVector[0] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT;
-	}
-	
 	/* 'default' enter sequence for state turning */
 	private void enterSequence_main_region_robot_is_moving_main_turning_default() {
 		entryAction_main_region_robot_is_moving_main_turning();
 		stateVector[0] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING;
+		stateConfVectorPosition = 0;
 	}
 	
 	/* 'default' enter sequence for state gap down */
 	private void enterSequence_main_region_robot_is_moving_main_gap_down_default() {
 		entryAction_main_region_robot_is_moving_main_gap_down();
 		stateVector[0] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_GAP_DOWN;
+		stateConfVectorPosition = 0;
+	}
+	
+	/* 'default' enter sequence for state move */
+	private void enterSequence_main_region_robot_is_moving_main_move_default() {
+		enterSequence_main_region_robot_is_moving_main_move_r1_default();
+		enterSequence_main_region_robot_is_moving_main_move_objectChecking_default();
+	}
+	
+	/* 'default' enter sequence for state moveBack */
+	private void enterSequence_main_region_robot_is_moving_main_move_r1_moveBack_default() {
+		entryAction_main_region_robot_is_moving_main_move_r1_moveBack();
+		stateVector[0] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEBACK;
+		stateConfVectorPosition = 0;
+	}
+	
+	/* 'default' enter sequence for state moveFront */
+	private void enterSequence_main_region_robot_is_moving_main_move_r1_moveFront_default() {
+		entryAction_main_region_robot_is_moving_main_move_r1_moveFront();
+		stateVector[0] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT;
+		stateConfVectorPosition = 0;
+	}
+	
+	/* 'default' enter sequence for state checkobject */
+	private void enterSequence_main_region_robot_is_moving_main_move_objectChecking_checkobject_default() {
+		entryAction_main_region_robot_is_moving_main_move_objectChecking_checkobject();
+		stateVector[1] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_CHECKOBJECT;
+		stateConfVectorPosition = 1;
+	}
+	
+	/* 'default' enter sequence for state robotIsStopped */
+	private void enterSequence_main_region_robot_is_moving_main_move_objectChecking_robotIsStopped_default() {
+		entryAction_main_region_robot_is_moving_main_move_objectChecking_robotIsStopped();
+		stateVector[1] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_ROBOTISSTOPPED;
+		stateConfVectorPosition = 1;
+	}
+	
+	/* 'default' enter sequence for state turnRound */
+	private void enterSequence_main_region_robot_is_moving_main_move_objectChecking_turnRound_default() {
+		entryAction_main_region_robot_is_moving_main_move_objectChecking_turnRound();
+		stateVector[1] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND;
+		stateConfVectorPosition = 1;
+	}
+	
+	/* 'default' enter sequence for state readyToGrip */
+	private void enterSequence_main_region_robot_is_moving_main_move_objectChecking_readyToGrip_default() {
+		entryAction_main_region_robot_is_moving_main_move_objectChecking_readyToGrip();
+		stateVector[1] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP;
+		stateConfVectorPosition = 1;
 	}
 	
 	/* 'default' enter sequence for region main region */
@@ -443,28 +558,15 @@ public class Statechart2 implements IStatemachine, ITimed {
 		react_main_region_robot_is_moving_main_move_r1__entry_Default();
 	}
 	
-	/* Default exit sequence for state move */
-	private void exitSequence_main_region_robot_is_moving_main_move() {
-		exitSequence_main_region_robot_is_moving_main_move_r1();
-	}
-	
-	/* Default exit sequence for state moveBack */
-	private void exitSequence_main_region_robot_is_moving_main_move_r1_moveBack() {
-		stateVector[0] = State.$NULLSTATE$;
-		
-		exitAction_main_region_robot_is_moving_main_move_r1_moveBack();
-	}
-	
-	/* Default exit sequence for state moveFront */
-	private void exitSequence_main_region_robot_is_moving_main_move_r1_moveFront() {
-		stateVector[0] = State.$NULLSTATE$;
-		
-		exitAction_main_region_robot_is_moving_main_move_r1_moveFront();
+	/* 'default' enter sequence for region objectChecking */
+	private void enterSequence_main_region_robot_is_moving_main_move_objectChecking_default() {
+		react_main_region_robot_is_moving_main_move_objectChecking__entry_Default();
 	}
 	
 	/* Default exit sequence for state turning */
 	private void exitSequence_main_region_robot_is_moving_main_turning() {
 		stateVector[0] = State.$NULLSTATE$;
+		stateConfVectorPosition = 0;
 		
 		exitAction_main_region_robot_is_moving_main_turning();
 	}
@@ -472,24 +574,94 @@ public class Statechart2 implements IStatemachine, ITimed {
 	/* Default exit sequence for state gap down */
 	private void exitSequence_main_region_robot_is_moving_main_gap_down() {
 		stateVector[0] = State.$NULLSTATE$;
+		stateConfVectorPosition = 0;
 		
 		exitAction_main_region_robot_is_moving_main_gap_down();
+	}
+	
+	/* Default exit sequence for state move */
+	private void exitSequence_main_region_robot_is_moving_main_move() {
+		exitSequence_main_region_robot_is_moving_main_move_r1();
+		exitSequence_main_region_robot_is_moving_main_move_objectChecking();
+	}
+	
+	/* Default exit sequence for state moveBack */
+	private void exitSequence_main_region_robot_is_moving_main_move_r1_moveBack() {
+		stateVector[0] = State.$NULLSTATE$;
+		stateConfVectorPosition = 0;
+		
+		exitAction_main_region_robot_is_moving_main_move_r1_moveBack();
+	}
+	
+	/* Default exit sequence for state moveFront */
+	private void exitSequence_main_region_robot_is_moving_main_move_r1_moveFront() {
+		stateVector[0] = State.$NULLSTATE$;
+		stateConfVectorPosition = 0;
+		
+		exitAction_main_region_robot_is_moving_main_move_r1_moveFront();
+	}
+	
+	/* Default exit sequence for state checkobject */
+	private void exitSequence_main_region_robot_is_moving_main_move_objectChecking_checkobject() {
+		stateVector[1] = State.$NULLSTATE$;
+		stateConfVectorPosition = 1;
+		
+		exitAction_main_region_robot_is_moving_main_move_objectChecking_checkobject();
+	}
+	
+	/* Default exit sequence for state robotIsStopped */
+	private void exitSequence_main_region_robot_is_moving_main_move_objectChecking_robotIsStopped() {
+		stateVector[1] = State.$NULLSTATE$;
+		stateConfVectorPosition = 1;
+		
+		exitAction_main_region_robot_is_moving_main_move_objectChecking_robotIsStopped();
+	}
+	
+	/* Default exit sequence for state turnRound */
+	private void exitSequence_main_region_robot_is_moving_main_move_objectChecking_turnRound() {
+		stateVector[1] = State.$NULLSTATE$;
+		stateConfVectorPosition = 1;
+		
+		exitAction_main_region_robot_is_moving_main_move_objectChecking_turnRound();
+	}
+	
+	/* Default exit sequence for state readyToGrip */
+	private void exitSequence_main_region_robot_is_moving_main_move_objectChecking_readyToGrip() {
+		stateVector[1] = State.$NULLSTATE$;
+		stateConfVectorPosition = 1;
 	}
 	
 	/* Default exit sequence for region main region */
 	private void exitSequence_main_region() {
 		switch (stateVector[0]) {
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING:
+			exitSequence_main_region_robot_is_moving_main_turning();
+			break;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_GAP_DOWN:
+			exitSequence_main_region_robot_is_moving_main_gap_down();
+			break;
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEBACK:
 			exitSequence_main_region_robot_is_moving_main_move_r1_moveBack();
 			break;
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT:
 			exitSequence_main_region_robot_is_moving_main_move_r1_moveFront();
 			break;
-		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING:
-			exitSequence_main_region_robot_is_moving_main_turning();
+		default:
 			break;
-		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_GAP_DOWN:
-			exitSequence_main_region_robot_is_moving_main_gap_down();
+		}
+		
+		switch (stateVector[1]) {
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_CHECKOBJECT:
+			exitSequence_main_region_robot_is_moving_main_move_objectChecking_checkobject();
+			break;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_ROBOTISSTOPPED:
+			exitSequence_main_region_robot_is_moving_main_move_objectChecking_robotIsStopped();
+			break;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND:
+			exitSequence_main_region_robot_is_moving_main_move_objectChecking_turnRound();
+			break;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP:
+			exitSequence_main_region_robot_is_moving_main_move_objectChecking_readyToGrip();
 			break;
 		default:
 			break;
@@ -504,6 +676,26 @@ public class Statechart2 implements IStatemachine, ITimed {
 			break;
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT:
 			exitSequence_main_region_robot_is_moving_main_move_r1_moveFront();
+			break;
+		default:
+			break;
+		}
+	}
+	
+	/* Default exit sequence for region objectChecking */
+	private void exitSequence_main_region_robot_is_moving_main_move_objectChecking() {
+		switch (stateVector[1]) {
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_CHECKOBJECT:
+			exitSequence_main_region_robot_is_moving_main_move_objectChecking_checkobject();
+			break;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_ROBOTISSTOPPED:
+			exitSequence_main_region_robot_is_moving_main_move_objectChecking_robotIsStopped();
+			break;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND:
+			exitSequence_main_region_robot_is_moving_main_move_objectChecking_turnRound();
+			break;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP:
+			exitSequence_main_region_robot_is_moving_main_move_objectChecking_readyToGrip();
 			break;
 		default:
 			break;
@@ -525,6 +717,11 @@ public class Statechart2 implements IStatemachine, ITimed {
 		enterSequence_main_region_robot_is_moving_main_move_r1_moveFront_default();
 	}
 	
+	/* Default react sequence for initial entry  */
+	private void react_main_region_robot_is_moving_main_move_objectChecking__entry_Default() {
+		enterSequence_main_region_robot_is_moving_main_move_objectChecking_checkobject_default();
+	}
+	
 	private long react(long transitioned_before) {
 		return transitioned_before;
 	}
@@ -541,25 +738,75 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return transitioned_after;
 	}
 	
-	private long main_region_robot_is_moving_main_move_react(long transitioned_before) {
+	private long main_region_robot_is_moving_main_turning_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
-			if (thereIsAGapDown) {
-				exitSequence_main_region_robot_is_moving_main_move();
-				raiseMoveBack();
-				
-				enterSequence_main_region_robot_is_moving_main_gap_down_default();
+			if (thereIsAnObstacle) {
+				exitSequence_main_region_robot_is_moving_main_turning();
+				enterSequence_main_region_robot_is_moving_main_move_r1_moveBack_default();
+				enterSequence_main_region_robot_is_moving_main_move_objectChecking_default();
 				main_region_robot_is_moving_react(0);
 				
 				transitioned_after = 0;
 			} else {
-				if ((thereIsAnObstacle || thereIsAnObject)) {
-					exitSequence_main_region_robot_is_moving_main_move();
-					enterSequence_main_region_robot_is_moving_main_turning_default();
+				if (thereIsNoObstacle) {
+					exitSequence_main_region_robot_is_moving_main_turning();
+					enterSequence_main_region_robot_is_moving_main_move_default();
 					main_region_robot_is_moving_react(0);
 					
 					transitioned_after = 0;
+				}
+			}
+		}
+		/* If no transition was taken then execute local reactions */
+		if (transitioned_after==transitioned_before) {
+			if (timeEvents[0]) {
+				raiseCheck();
+			}
+			transitioned_after = main_region_robot_is_moving_react(transitioned_before);
+		}
+		return transitioned_after;
+	}
+	
+	private long main_region_robot_is_moving_main_gap_down_react(long transitioned_before) {
+		long transitioned_after = transitioned_before;
+		
+		if (transitioned_after<0) {
+			if (timeEvents[1]) {
+				exitSequence_main_region_robot_is_moving_main_gap_down();
+				enterSequence_main_region_robot_is_moving_main_turning_default();
+				main_region_robot_is_moving_react(0);
+				
+				transitioned_after = 0;
+			}
+		}
+		/* If no transition was taken then execute local reactions */
+		if (transitioned_after==transitioned_before) {
+			transitioned_after = main_region_robot_is_moving_react(transitioned_before);
+		}
+		return transitioned_after;
+	}
+	
+	private long main_region_robot_is_moving_main_move_react(long transitioned_before) {
+		long transitioned_after = transitioned_before;
+		
+		if (transitioned_after<0) {
+			if (thereIsAnObstacle) {
+				exitSequence_main_region_robot_is_moving_main_move();
+				enterSequence_main_region_robot_is_moving_main_turning_default();
+				main_region_robot_is_moving_react(0);
+				
+				transitioned_after = 1;
+			} else {
+				if (thereIsAGapDown) {
+					exitSequence_main_region_robot_is_moving_main_move();
+					raiseMoveBack();
+					
+					enterSequence_main_region_robot_is_moving_main_gap_down_default();
+					main_region_robot_is_moving_react(0);
+					
+					transitioned_after = 1;
 				}
 			}
 		}
@@ -574,17 +821,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
-			if (timeEvents[0]) {
+			if (timeEvents[2]) {
 				exitSequence_main_region_robot_is_moving_main_move();
 				enterSequence_main_region_robot_is_moving_main_turning_default();
 				main_region_robot_is_moving_react(0);
 				
 				transitioned_after = 0;
 			}
-		}
-		/* If no transition was taken then execute local reactions */
-		if (transitioned_after==transitioned_before) {
-			transitioned_after = main_region_robot_is_moving_main_move_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
@@ -596,14 +839,35 @@ public class Statechart2 implements IStatemachine, ITimed {
 			if (thereIsAFrontObstacle) {
 				exitSequence_main_region_robot_is_moving_main_move_r1_moveFront();
 				enterSequence_main_region_robot_is_moving_main_move_r1_moveBack_default();
-				main_region_robot_is_moving_main_move_react(0);
-				
 				transitioned_after = 0;
 			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			if (timeEvents[1]) {
+			if (timeEvents[3]) {
+				raiseCheck();
+			}
+		}
+		return transitioned_after;
+	}
+	
+	private long main_region_robot_is_moving_main_move_objectChecking_checkobject_react(long transitioned_before) {
+		long transitioned_after = transitioned_before;
+		
+		if (transitioned_after<1) {
+			if (thereIsAnObject) {
+				exitSequence_main_region_robot_is_moving_main_move_objectChecking_checkobject();
+				raiseStop();
+				
+				enterSequence_main_region_robot_is_moving_main_move_objectChecking_robotIsStopped_default();
+				main_region_robot_is_moving_main_move_react(0);
+				
+				transitioned_after = 1;
+			}
+		}
+		/* If no transition was taken then execute local reactions */
+		if (transitioned_after==transitioned_before) {
+			if (timeEvents[4]) {
 				raiseCheck();
 			}
 			transitioned_after = main_region_robot_is_moving_main_move_react(transitioned_before);
@@ -611,51 +875,54 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return transitioned_after;
 	}
 	
-	private long main_region_robot_is_moving_main_turning_react(long transitioned_before) {
+	private long main_region_robot_is_moving_main_move_objectChecking_robotIsStopped_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
-		if (transitioned_after<0) {
-			if (thereIsNoObstacle) {
-				exitSequence_main_region_robot_is_moving_main_turning();
-				enterSequence_main_region_robot_is_moving_main_move_default();
-				main_region_robot_is_moving_react(0);
+		if (transitioned_after<1) {
+			if (timeEvents[5]) {
+				exitSequence_main_region_robot_is_moving_main_move_objectChecking_robotIsStopped();
+				enterSequence_main_region_robot_is_moving_main_move_objectChecking_turnRound_default();
+				main_region_robot_is_moving_main_move_react(0);
 				
-				transitioned_after = 0;
-			} else {
-				if ((thereIsAnObstacle || thereIsAnObject)) {
-					exitSequence_main_region_robot_is_moving_main_turning();
-					enterSequence_main_region_robot_is_moving_main_move_r1_moveBack_default();
-					main_region_robot_is_moving_react(0);
-					
-					transitioned_after = 0;
-				}
+				transitioned_after = 1;
 			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			if (timeEvents[2]) {
-				raiseCheck();
-			}
-			transitioned_after = main_region_robot_is_moving_react(transitioned_before);
+			transitioned_after = main_region_robot_is_moving_main_move_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
 	
-	private long main_region_robot_is_moving_main_gap_down_react(long transitioned_before) {
+	private long main_region_robot_is_moving_main_move_objectChecking_turnRound_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
-		if (transitioned_after<0) {
-			if (timeEvents[3]) {
-				exitSequence_main_region_robot_is_moving_main_gap_down();
-				enterSequence_main_region_robot_is_moving_main_turning_default();
-				main_region_robot_is_moving_react(0);
+		if (transitioned_after<1) {
+			if (timeEvents[6]) {
+				exitSequence_main_region_robot_is_moving_main_move_objectChecking_turnRound();
+				raiseTurnRound();
 				
-				transitioned_after = 0;
+				enterSequence_main_region_robot_is_moving_main_move_objectChecking_readyToGrip_default();
+				main_region_robot_is_moving_main_move_react(0);
+				
+				transitioned_after = 1;
 			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = main_region_robot_is_moving_react(transitioned_before);
+			transitioned_after = main_region_robot_is_moving_main_move_react(transitioned_before);
+		}
+		return transitioned_after;
+	}
+	
+	private long main_region_robot_is_moving_main_move_objectChecking_readyToGrip_react(long transitioned_before) {
+		long transitioned_after = transitioned_before;
+		
+		if (transitioned_after<1) {
+		}
+		/* If no transition was taken then execute local reactions */
+		if (transitioned_after==transitioned_before) {
+			transitioned_after = main_region_robot_is_moving_main_move_react(transitioned_before);
 		}
 		return transitioned_after;
 	}

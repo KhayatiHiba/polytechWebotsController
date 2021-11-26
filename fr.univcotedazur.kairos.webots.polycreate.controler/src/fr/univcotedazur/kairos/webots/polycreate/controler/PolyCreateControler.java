@@ -98,7 +98,7 @@ public class PolyCreateControler extends Supervisor {
 
 	//added modification
 	public Statechart2 theCtrl;
-	private boolean donotturn = true;
+	private boolean isTurning = false;
 
 
 
@@ -180,7 +180,9 @@ public class PolyCreateControler extends Supervisor {
 		theCtrl.getMoveFront().subscribe( new MyObserverMoveFront(this));
 		theCtrl.getCheck().subscribe(new MyObserverCheck(this));
 		theCtrl.getMoveBack().subscribe(new MyObserverMoveBack(this));
-		theCtrl.getTurnObject().subscribe(new MyObserverTurnObject(this));
+		theCtrl.getTurnRound().subscribe(new MyObserverTurnRound(this));
+		theCtrl.getStop().subscribe(new MyObserverStop(this));
+		theCtrl.getTurnRound().subscribe(new MyObserverTurnRound(this));
 	
 		
 		theCtrl.enter();
@@ -239,8 +241,12 @@ public class PolyCreateControler extends Supervisor {
 		gripMotors[1].setPosition(-0.2);
 	}
 	
+	public void turnRound() {
+		this.turn(Math.PI/2);
+	}
+	
 	public void turn(double angle) {
-		donotturn = false;
+		isTurning = true;
 		stop();
 		step(timestep);
 		double l_offset = leftSensor.getValue();
@@ -259,7 +265,7 @@ public class PolyCreateControler extends Supervisor {
 		} while (orientation < neg * angle);
 		stop();
 		step(timestep);
-		donotturn = true;
+		isTurning = false;
 
 	}
 	
@@ -300,10 +306,11 @@ public class PolyCreateControler extends Supervisor {
 		
 	}
 	public void objectCheck() {
-		if(this.frontCamera.getRecognitionObjects().length > 0) {
-				if(this.closeToObject()) {
+		CameraRecognitionObject[] ojs = this.frontCamera.getRecognitionObjects();
+		if(ojs.length >= 1) {
+				if(this.closeToObject(ojs)) {
 					System.out.println("OUPS! an object");
-					System.out.println("        I saw "+" on front Camera at : "+this.frontCamera.getRecognitionObjects()[0].getPosition()[0]);
+					System.out.println("I saw "+" on front Camera at : "+ojs[0].getPosition()[0]);
 					theCtrl.raiseThereIsAnObject();
 				}
 		}
@@ -338,10 +345,17 @@ public class PolyCreateControler extends Supervisor {
 		
 	}
 	
-	public boolean closeToObject() {
-		double posObj = this.frontCamera.getRecognitionObjects()[0].getPosition()[0];
-		double posRob = this.frontDistanceSensor.getMinValue();
-		return posObj < posRob;
+	public boolean closeToObject(CameraRecognitionObject[] ojs) {
+		double xObj = ((double)Math.round(ojs[0].getPosition()[1]*1000))/10;
+		double yObj = Math.round(ojs[0].getPosition()[0]*180/Math.PI) ;
+		double xRob = Math.round(this.getSelf().getPosition()[0]);
+		double yRob = Math.round(this.getSelf().getPosition()[2]);
+		double a = yObj-yRob;
+		double b = xObj-xRob;
+		double c = Math.sqrt((a*a)+(b*b));
+		if(c < 4)
+			return true;
+		return false;
 	}
 
 
@@ -350,8 +364,15 @@ public class PolyCreateControler extends Supervisor {
 	public void passiveWait(double sec) {
 		double start_time = getTime();
 		do {
-			if(donotturn ) {
+			if(!isTurning ) {
 				step(timestep);
+			}else {
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		} while (start_time + sec > getTime());
 	}
@@ -374,7 +395,16 @@ public class PolyCreateControler extends Supervisor {
 
 		
 		while(true) {
-			controler.passiveWait(0.5);
+			//if(!controler.isTurning) {
+				controler.passiveWait(0.5);
+//			}else {
+//				try {
+//					Thread.sleep(100);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
 		}
 
 		/*try {
@@ -448,5 +478,7 @@ public class PolyCreateControler extends Supervisor {
 		this.delete();
 		super.finalize();
 	}
+
+	
 
 }
