@@ -183,6 +183,7 @@ public class PolyCreateControler extends Supervisor {
 		theCtrl.getTurnRound().subscribe(new MyObserverTurnRound(this));
 		theCtrl.getStop().subscribe(new MyObserverStop(this));
 		theCtrl.getTurnRound().subscribe(new MyObserverTurnRound(this));
+		theCtrl.getGrip().subscribe(new MyObserverGrip(this));
 	
 		
 		theCtrl.enter();
@@ -239,6 +240,14 @@ public class PolyCreateControler extends Supervisor {
 	public void closeGripper() {
 		gripMotors[0].setPosition(-0.2);
 		gripMotors[1].setPosition(-0.2);
+	}
+	
+	public void grip() {
+		// TODO Auto-generated method stub
+		this.openGripper();
+		this.goBackward();
+		this.closeGripper();
+		
 	}
 	
 	public void turnRound() {
@@ -307,14 +316,23 @@ public class PolyCreateControler extends Supervisor {
 		
 	}
 	public void objectCheck() {
-		CameraRecognitionObject[] ojs = this.frontCamera.getRecognitionObjects();
-		if(ojs.length >= 1) {
-				if(this.closeToObject(ojs)) {
+		CameraRecognitionObject[] ojsf = this.frontCamera.getRecognitionObjects();
+		CameraRecognitionObject[] ojsb = this.backCamera.getRecognitionObjects();
+		
+		if(ojsf.length >= 1) {
+				if(this.closeToObject(ojsf)) {
 					System.out.println("OUPS! an object");
-					System.out.println("I saw "+" on front Camera at : "+ojs[0].getPosition()[0]);
-					theCtrl.raiseThereIsAnObject();
+					System.out.println("I saw "+" on front Camera at : "+ojsf[0].getPosition()[0]);
+					theCtrl.raiseThereIsAnObjectFront();
 				}
 		}
+		if(ojsb.length >= 1) {
+			if(this.gripperCloseToObject(ojsb)) {
+				System.out.println("OUPS! an object");
+				System.out.println("I saw "+" on back Camera at : "+ojsb[0].getPosition()[0]);
+				theCtrl.raiseThereIsAnObjectBack();
+			}
+	}
 	}
 		
 	
@@ -358,7 +376,19 @@ public class PolyCreateControler extends Supervisor {
 			return true;
 		return false;
 	}
-
+	
+	public boolean gripperCloseToObject(CameraRecognitionObject[] ojs) {
+		double xObj = this.gripperSensor.getValue();
+		double yObj = Math.round(ojs[0].getPosition()[0]*180/Math.PI) ;
+		double xRob = Math.round(this.getSelf().getPosition()[0]);
+		double yRob = Math.round(this.getSelf().getPosition()[2]);
+		double a = yObj-yRob;
+		double b = xObj-xRob;
+		double c = Math.sqrt((a*a)+(b*b));
+		if(c < 4)
+			return true;
+		return false;
+	}
 
 	
 	///////other methods///////
@@ -479,6 +509,8 @@ public class PolyCreateControler extends Supervisor {
 		this.delete();
 		super.finalize();
 	}
+
+	
 
 	
 

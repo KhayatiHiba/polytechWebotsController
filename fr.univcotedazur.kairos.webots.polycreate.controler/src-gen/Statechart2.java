@@ -18,7 +18,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_CHECKOBJECT,
 		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_ROBOTISSTOPPED,
 		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND,
-		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP,
+		MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_GRIP,
 		$NULLSTATE$
 	};
 	
@@ -26,7 +26,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	private ITimerService timerService;
 	
-	private final boolean[] timeEvents = new boolean[7];
+	private final boolean[] timeEvents = new boolean[6];
 	
 	private Queue<Runnable> inEventQueue = new LinkedList<Runnable>();
 	private boolean isExecuting;
@@ -103,7 +103,8 @@ public class Statechart2 implements IStatemachine, ITimed {
 		thereIsNoObstacle = false;
 		thereIsAFrontObstacle = false;
 		thereIsAVirtualWall = false;
-		thereIsAnObject = false;
+		thereIsAnObjectFront = false;
+		thereIsAnObjectBack = false;
 		thereIsAGapDown = false;
 		timeEvents[0] = false;
 		timeEvents[1] = false;
@@ -111,7 +112,6 @@ public class Statechart2 implements IStatemachine, ITimed {
 		timeEvents[3] = false;
 		timeEvents[4] = false;
 		timeEvents[5] = false;
-		timeEvents[6] = false;
 	}
 	
 	private void microStep() {
@@ -147,8 +147,8 @@ public class Statechart2 implements IStatemachine, ITimed {
 			case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND:
 				transitioned = main_region_robot_is_moving_main_move_objectChecking_turnRound_react(transitioned);
 				break;
-			case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP:
-				transitioned = main_region_robot_is_moving_main_move_objectChecking_readyToGrip_react(transitioned);
+			case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_GRIP:
+				transitioned = main_region_robot_is_moving_main_move_objectChecking_grip_react(transitioned);
 				break;
 			default:
 				break;
@@ -174,7 +174,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 			clearInEvents();
 			
 			nextEvent();
-		} while (((((((((((((thereIsAnObstacle || thereIsNoObstacle) || thereIsAFrontObstacle) || thereIsAVirtualWall) || thereIsAnObject) || thereIsAGapDown) || timeEvents[0]) || timeEvents[1]) || timeEvents[2]) || timeEvents[3]) || timeEvents[4]) || timeEvents[5]) || timeEvents[6]));
+		} while (((((((((((((thereIsAnObstacle || thereIsNoObstacle) || thereIsAFrontObstacle) || thereIsAVirtualWall) || thereIsAnObjectFront) || thereIsAnObjectBack) || thereIsAGapDown) || timeEvents[0]) || timeEvents[1]) || timeEvents[2]) || timeEvents[3]) || timeEvents[4]) || timeEvents[5]));
 		
 		isExecuting = false;
 	}
@@ -193,14 +193,14 @@ public class Statechart2 implements IStatemachine, ITimed {
 		switch (state) {
 		case MAIN_REGION_ROBOT_IS_MOVING:
 			return stateVector[0].ordinal() >= State.
-					MAIN_REGION_ROBOT_IS_MOVING.ordinal()&& stateVector[0].ordinal() <= State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP.ordinal();
+					MAIN_REGION_ROBOT_IS_MOVING.ordinal()&& stateVector[0].ordinal() <= State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_GRIP.ordinal();
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING:
 			return stateVector[0] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_TURNING;
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_GAP_DOWN:
 			return stateVector[0] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_GAP_DOWN;
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE:
 			return stateVector[0].ordinal() >= State.
-					MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE.ordinal()&& stateVector[0].ordinal() <= State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP.ordinal();
+					MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE.ordinal()&& stateVector[0].ordinal() <= State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_GRIP.ordinal();
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEBACK:
 			return stateVector[0] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEBACK;
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_R1_MOVEFRONT:
@@ -211,8 +211,8 @@ public class Statechart2 implements IStatemachine, ITimed {
 			return stateVector[1] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_ROBOTISSTOPPED;
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND:
 			return stateVector[1] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND;
-		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP:
-			return stateVector[1] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP;
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_GRIP:
+			return stateVector[1] == State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_GRIP;
 		default:
 			return false;
 		}
@@ -274,12 +274,22 @@ public class Statechart2 implements IStatemachine, ITimed {
 		runCycle();
 	}
 	
-	private boolean thereIsAnObject;
+	private boolean thereIsAnObjectFront;
 	
 	
-	public void raiseThereIsAnObject() {
+	public void raiseThereIsAnObjectFront() {
 		inEventQueue.add(() -> {
-			thereIsAnObject = true;
+			thereIsAnObjectFront = true;
+		});
+		runCycle();
+	}
+	
+	private boolean thereIsAnObjectBack;
+	
+	
+	public void raiseThereIsAnObjectBack() {
+		inEventQueue.add(() -> {
+			thereIsAnObjectBack = true;
 		});
 		runCycle();
 	}
@@ -392,6 +402,20 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return checkGripperObservable;
 	}
 	
+	private boolean grip;
+	
+	
+	protected void raiseGrip() {
+		grip = true;
+		gripObservable.next(null);
+	}
+	
+	private Observable<Void> gripObservable = new Observable<Void>();
+	
+	public Observable<Void> getGrip() {
+		return gripObservable;
+	}
+	
 	/* Entry action for state 'turning'. */
 	private void entryAction_main_region_robot_is_moving_main_turning() {
 		timerService.setTimer(this, 0, 300, true);
@@ -432,14 +456,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Entry action for state 'turnRound'. */
 	private void entryAction_main_region_robot_is_moving_main_move_objectChecking_turnRound() {
-		timerService.setTimer(this, 6, (2 * 1000), false);
-		
 		raiseTurnRound();
-	}
-	
-	/* Entry action for state 'readyToGrip'. */
-	private void entryAction_main_region_robot_is_moving_main_move_objectChecking_readyToGrip() {
-		raiseStop();
 	}
 	
 	/* Exit action for state 'turning'. */
@@ -470,11 +487,6 @@ public class Statechart2 implements IStatemachine, ITimed {
 	/* Exit action for state 'robotIsStopped'. */
 	private void exitAction_main_region_robot_is_moving_main_move_objectChecking_robotIsStopped() {
 		timerService.unsetTimer(this, 5);
-	}
-	
-	/* Exit action for state 'turnRound'. */
-	private void exitAction_main_region_robot_is_moving_main_move_objectChecking_turnRound() {
-		timerService.unsetTimer(this, 6);
 	}
 	
 	/* 'default' enter sequence for state robot is moving */
@@ -534,13 +546,6 @@ public class Statechart2 implements IStatemachine, ITimed {
 	private void enterSequence_main_region_robot_is_moving_main_move_objectChecking_turnRound_default() {
 		entryAction_main_region_robot_is_moving_main_move_objectChecking_turnRound();
 		stateVector[1] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND;
-		stateConfVectorPosition = 1;
-	}
-	
-	/* 'default' enter sequence for state readyToGrip */
-	private void enterSequence_main_region_robot_is_moving_main_move_objectChecking_readyToGrip_default() {
-		entryAction_main_region_robot_is_moving_main_move_objectChecking_readyToGrip();
-		stateVector[1] = State.MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP;
 		stateConfVectorPosition = 1;
 	}
 	
@@ -622,12 +627,10 @@ public class Statechart2 implements IStatemachine, ITimed {
 	private void exitSequence_main_region_robot_is_moving_main_move_objectChecking_turnRound() {
 		stateVector[1] = State.$NULLSTATE$;
 		stateConfVectorPosition = 1;
-		
-		exitAction_main_region_robot_is_moving_main_move_objectChecking_turnRound();
 	}
 	
-	/* Default exit sequence for state readyToGrip */
-	private void exitSequence_main_region_robot_is_moving_main_move_objectChecking_readyToGrip() {
+	/* Default exit sequence for state grip */
+	private void exitSequence_main_region_robot_is_moving_main_move_objectChecking_grip() {
 		stateVector[1] = State.$NULLSTATE$;
 		stateConfVectorPosition = 1;
 	}
@@ -661,8 +664,8 @@ public class Statechart2 implements IStatemachine, ITimed {
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND:
 			exitSequence_main_region_robot_is_moving_main_move_objectChecking_turnRound();
 			break;
-		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP:
-			exitSequence_main_region_robot_is_moving_main_move_objectChecking_readyToGrip();
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_GRIP:
+			exitSequence_main_region_robot_is_moving_main_move_objectChecking_grip();
 			break;
 		default:
 			break;
@@ -695,8 +698,8 @@ public class Statechart2 implements IStatemachine, ITimed {
 		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_TURNROUND:
 			exitSequence_main_region_robot_is_moving_main_move_objectChecking_turnRound();
 			break;
-		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_READYTOGRIP:
-			exitSequence_main_region_robot_is_moving_main_move_objectChecking_readyToGrip();
+		case MAIN_REGION_ROBOT_IS_MOVING_MAIN_MOVE_OBJECTCHECKING_GRIP:
+			exitSequence_main_region_robot_is_moving_main_move_objectChecking_grip();
 			break;
 		default:
 			break;
@@ -743,7 +746,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
-			if (thereIsAnObstacle) {
+			if ((thereIsAnObstacle || thereIsAVirtualWall)) {
 				exitSequence_main_region_robot_is_moving_main_turning();
 				enterSequence_main_region_robot_is_moving_main_move_r1_moveBack_default();
 				enterSequence_main_region_robot_is_moving_main_move_objectChecking_default();
@@ -856,7 +859,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<1) {
-			if (thereIsAnObject) {
+			if (thereIsAnObjectFront) {
 				exitSequence_main_region_robot_is_moving_main_move_objectChecking_checkobject();
 				raiseStop();
 				
@@ -899,13 +902,6 @@ public class Statechart2 implements IStatemachine, ITimed {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<1) {
-			if (timeEvents[6]) {
-				exitSequence_main_region_robot_is_moving_main_move_objectChecking_turnRound();
-				enterSequence_main_region_robot_is_moving_main_move_objectChecking_readyToGrip_default();
-				main_region_robot_is_moving_main_move_react(0);
-				
-				transitioned_after = 1;
-			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
@@ -914,7 +910,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return transitioned_after;
 	}
 	
-	private long main_region_robot_is_moving_main_move_objectChecking_readyToGrip_react(long transitioned_before) {
+	private long main_region_robot_is_moving_main_move_objectChecking_grip_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<1) {
