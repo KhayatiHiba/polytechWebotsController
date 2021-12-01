@@ -242,7 +242,8 @@ public class PolyCreateControler extends Supervisor {
 	}
 	
 	public void turnRound() {
-		this.turn(Math.PI/2);
+		double orientActual = this.getSelf().getOrientation()[0];
+		this.turn(orientActual + Math.PI/2 + Math.PI/4);
 	}
 	
 	public void turn(double angle) {
