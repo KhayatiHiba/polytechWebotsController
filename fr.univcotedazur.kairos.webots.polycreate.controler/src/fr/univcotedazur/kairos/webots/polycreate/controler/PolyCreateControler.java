@@ -43,6 +43,7 @@ public class PolyCreateControler extends Supervisor {
 	static int NULL_SPEED = 0;
 	static int HALF_SPEED = 8;
 	static int MIN_SPEED = -16;
+	static double turnPrecision= 0.05;
 
 	static double WHEEL_RADIUS = 0.031;
 	static double AXLE_LENGTH = 0.271756;
@@ -98,6 +99,7 @@ public class PolyCreateControler extends Supervisor {
 
 	//added modification
 	public Statechart2 theCtrl;
+	//private boolean isTurning = false;
 	private boolean isTurning = false;
 
 
@@ -255,7 +257,7 @@ public class PolyCreateControler extends Supervisor {
 		this.turn(orientActual + Math.PI/2 + Math.PI/4);
 	}
 	
-	public void turn(double angle) {
+	/*public void turn(double angle) {
 		isTurning = true;
 		stop();
 		step(timestep);
@@ -277,6 +279,28 @@ public class PolyCreateControler extends Supervisor {
 		step(timestep);
 		isTurning = false;
 
+	}*/
+	/**
+	 * turn the robot to getOrientation()+angle
+	 * @param angle: the angle to apply
+	 */
+	void turn(double angle) {
+		this.isTurning=true;
+		stop();
+		doStep();
+		double direction = (angle < 0.0) ? -1.0 : 1.0;
+		leftMotor.setVelocity(direction * HALF_SPEED);
+		rightMotor.setVelocity(-direction * HALF_SPEED);
+		double targetOrientation = (this.getOrientation()+angle)%(2*Math.PI);
+		double actualOrientation;
+		System.out.println("do");
+		do {
+			doStep();
+			actualOrientation = this.getOrientation();
+		} while (!(actualOrientation > (targetOrientation -turnPrecision) && actualOrientation < (targetOrientation + turnPrecision)));
+		stop();
+		doStep();
+		this.isTurning=false;
 	}
 	
 	
@@ -392,7 +416,7 @@ public class PolyCreateControler extends Supervisor {
 
 	
 	///////other methods///////
-	public void passiveWait(double sec) {
+	/*public void passiveWait(double sec) {
 		double start_time = getTime();
 		do {
 			if(!isTurning ) {
@@ -405,7 +429,19 @@ public class PolyCreateControler extends Supervisor {
 					e.printStackTrace();
 				}
 			}
+		} while (start_time + sec > getTime());*/
+	synchronized void passiveWait(double sec) {
+		double start_time = getTime();
+		do {
+			step(timestep);
+			if (!isTurning ) {
+				doStep();
+			}
 		} while (start_time + sec > getTime());
+	}
+		
+	synchronized void doStep() {
+		step(timestep);
 	}
 
 	public double randdouble() {
@@ -414,6 +450,19 @@ public class PolyCreateControler extends Supervisor {
 
 	public double[] getPosition() {
 		return gps.getValues();
+	}
+	
+	/**
+	 * 
+	 * @return the orientation wrt the north in [0; 2PI[
+	 */
+	public double getOrientation() {
+		double res = Math.acos(this.getSelf().getOrientation()[0]);
+		if(this.getSelf().getOrientation()[1] < 0) {
+			return (2*Math.PI) - res;
+		}else {
+			return res;
+		}
 	}
 
 	
