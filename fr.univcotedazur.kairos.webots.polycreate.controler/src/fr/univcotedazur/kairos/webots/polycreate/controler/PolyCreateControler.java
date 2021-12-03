@@ -35,6 +35,7 @@ import com.cyberbotics.webots.controller.Supervisor;
 import com.cyberbotics.webots.controller.TouchSensor;
 import com.yakindu.core.ITimerService;
 import com.yakindu.core.TimerService;
+import com.yakindu.core.rx.Observer;
 
 
 public class PolyCreateControler extends Supervisor {
@@ -43,7 +44,7 @@ public class PolyCreateControler extends Supervisor {
 	static int NULL_SPEED = 0;
 	static int HALF_SPEED = 8;
 	static int MIN_SPEED = -16;
-	static double turnPrecision= 0.05;
+	static double turnPrecision= 0.5;
 
 	static double WHEEL_RADIUS = 0.031;
 	static double AXLE_LENGTH = 0.271756;
@@ -186,6 +187,7 @@ public class PolyCreateControler extends Supervisor {
 		theCtrl.getStop().subscribe(new MyObserverStop(this));
 		theCtrl.getTurnRound().subscribe(new MyObserverTurnRound(this));
 		theCtrl.getGrip().subscribe(new MyObserverGrip(this));
+		theCtrl.getDoPW().subscribe(new MyObserverPassiveWait(this));
 	
 		
 		theCtrl.enter();
@@ -212,11 +214,8 @@ public class PolyCreateControler extends Supervisor {
 		this.gapAndStairsCheck();
 	}
 	public void dodgeObstacle() {
-		this.turn(Math.PI/6);
-	}
-	
-	public void dodgeObjects() {
-		this.turn(Math.PI/12);
+		double orientActual = Math.acos(this.getSelf().getOrientation()[0]);
+		this.turn(orientActual+Math.PI/18);
 	}
 	
 	public void goForward() {
@@ -253,33 +252,10 @@ public class PolyCreateControler extends Supervisor {
 	}
 	
 	public void turnRound() {
-		double orientActual = this.getSelf().getOrientation()[0];
+		double orientActual = Math.acos(this.getSelf().getOrientation()[0]);
 		this.turn(orientActual + Math.PI/2 + Math.PI/4);
 	}
 	
-	/*public void turn(double angle) {
-		isTurning = true;
-		stop();
-		step(timestep);
-		double l_offset = leftSensor.getValue();
-		double r_offset = rightSensor.getValue();
-		double neg = (angle < 0.0) ? -1.0 : 1.0;
-		leftMotor.setVelocity(neg * HALF_SPEED);
-		rightMotor.setVelocity(-neg * HALF_SPEED);
-		double orientation;
-		do {
-			double l = leftSensor.getValue() - l_offset;
-			double r = rightSensor.getValue() - r_offset;
-			double dl = l * WHEEL_RADIUS;                 // distance covered by left wheel in meter
-			double dr = r * WHEEL_RADIUS;                 // distance covered by right wheel in meter
-			orientation = neg * (dl - dr) / AXLE_LENGTH;  // delta orientation in radian
-			step(timestep);
-		} while (orientation < neg * angle);
-		stop();
-		step(timestep);
-		isTurning = false;
-
-	}*/
 	/**
 	 * turn the robot to getOrientation()+angle
 	 * @param angle: the angle to apply
@@ -295,8 +271,8 @@ public class PolyCreateControler extends Supervisor {
 		double actualOrientation;
 		System.out.println("do");
 		do {
-			doStep();
 			actualOrientation = this.getOrientation();
+			doStep();
 		} while (!(actualOrientation > (targetOrientation -turnPrecision) && actualOrientation < (targetOrientation + turnPrecision)));
 		stop();
 		doStep();
@@ -333,7 +309,7 @@ public class PolyCreateControler extends Supervisor {
 			System.out.println("OUPS! obstacle right ");
 			theCtrl.raiseThereIsAnObstacle();
 		}
-		else if( this.frontDistanceSensor.getValue() < 200){
+		else if( this.frontDistanceSensor.getValue() < 200 || this.frontRightDistanceSensor.getValue() < 250 || this.frontLeftDistanceSensor.getValue() < 250){
 			System.out.println("OUPS! a front obstacle");
 			theCtrl.raiseThereIsAFrontObstacle();
 		}
@@ -416,11 +392,11 @@ public class PolyCreateControler extends Supervisor {
 
 	
 	///////other methods///////
-	/*public void passiveWait(double sec) {
+	synchronized void passiveWait(double sec) {
 		double start_time = getTime();
 		do {
-			if(!isTurning ) {
-				step(timestep);
+			if (!isTurning ) {
+				doStep();
 			}else {
 				try {
 					Thread.sleep(500);
@@ -429,19 +405,13 @@ public class PolyCreateControler extends Supervisor {
 					e.printStackTrace();
 				}
 			}
-		} while (start_time + sec > getTime());*/
-	synchronized void passiveWait(double sec) {
-		double start_time = getTime();
-		do {
-			step(timestep);
-			if (!isTurning ) {
-				doStep();
-			}
 		} while (start_time + sec > getTime());
 	}
 		
-	synchronized void doStep() {
+	void doStep() {
+	//	System.out.println("i am in dostep ");
 		step(timestep);
+		//System.out.println("end of dostep ");
 	}
 
 	public double randdouble() {
@@ -475,16 +445,22 @@ public class PolyCreateControler extends Supervisor {
 
 		
 		while(true) {
-			//if(!controler.isTurning) {
-				controler.passiveWait(0.5);
-//			}else {
-//				try {
-//					Thread.sleep(100);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
+//			//if(!controler.isTurning) {
+//				controler.passiveWait(0.5);
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+////			}else {
+////				try {
+////					Thread.sleep(100);
+////				} catch (InterruptedException e) {
+////					// TODO Auto-generated catch block
+////					e.printStackTrace();
+////				}
+////			}
 		}
 
 		/*try {

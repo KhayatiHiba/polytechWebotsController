@@ -12,5 +12,24 @@ GeneratorModel for yakindu::java {
 			targetFolder = FOLDER
 			libraryTargetFolder = "src"
 		}
+		feature OutEventAPI {
+			observables = true
+			getters = false
+		}
+		
+		feature Naming {
+			libraryPackage = "com.yakindu.core"
+			basePackage = "fr.univcotedazur.kairos.webots.polycreate.controler"
+			typeName = "Statechart2"
+		}
+		feature GeneralFeatures {
+			RuntimeService = false
+			TimerService = true
+			synchronized = true
+			runnable = false
+		}
+		
 	}
+	
+	
 }

@@ -10,6 +10,6 @@ orthographicViewHeight: 5.87492
 textFiles: -1
 globalOptionalRendering: DistanceSensorRays
 consoles: Console:All:All
-renderingDevicePerspectives: Create:backCamera;1;0.75;0.16287;0.569088
-renderingDevicePerspectives: Create:frontCamera;1;0.75;0.010023;0.748884
+renderingDevicePerspectives: Create:backCamera;1;0.75;0.16287;0.316901
+renderingDevicePerspectives: Create:frontCamera;1;0.75;0.010023;0.316901
 renderingDevicePerspectives: robot:ground_display;0;0.375;0;0
