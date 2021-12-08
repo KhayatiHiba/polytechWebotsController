@@ -44,7 +44,7 @@ public class PolyCreateControler extends Supervisor {
 	static int NULL_SPEED = 0;
 	static int HALF_SPEED = 8;
 	static int MIN_SPEED = -16;
-	static double turnPrecision= 0.5;
+	static double turnPrecision= 0.3;
 
 	static double WHEEL_RADIUS = 0.031;
 	static double AXLE_LENGTH = 0.271756;
@@ -215,7 +215,7 @@ public class PolyCreateControler extends Supervisor {
 	}
 	public void dodgeObstacle() {
 		double orientActual = Math.acos(this.getSelf().getOrientation()[0]);
-		this.turn(orientActual+Math.PI/18);
+		this.turn(Math.PI/6);
 	}
 	
 	public void goForward() {
@@ -253,7 +253,7 @@ public class PolyCreateControler extends Supervisor {
 	
 	public void turnRound() {
 		double orientActual = Math.acos(this.getSelf().getOrientation()[0]);
-		this.turn(orientActual + Math.PI/2 + Math.PI/4);
+		this.turn(orientActual + Math.PI);
 	}
 	
 	/**
@@ -294,24 +294,31 @@ public class PolyCreateControler extends Supervisor {
 	}
 	public void gapAndStairsCheck() {
 		if (this.frontRightCliffSensor.getValue() == 0 || this.frontLeftCliffSensor.getValue() == 0 || 
-				this.leftCliffSensor.getValue() == 0 || this.rightCliffSensor.getValue() == 0
-				|| this.frontDistanceSensor.getValue() < 200){
-			System.out.println("OUPS! a gap front ");
+				this.leftCliffSensor.getValue() == 0 || this.rightCliffSensor.getValue() == 0){
+			System.out.println("OUPS! a gap down ");
 			theCtrl.raiseThereIsAGapDown();
+		}
+		
+		else if (!(this.frontRightCliffSensor.getValue() == 0 || this.frontLeftCliffSensor.getValue() == 0 || 
+				this.leftCliffSensor.getValue() == 0 || this.rightCliffSensor.getValue() == 0) ){
+			theCtrl.raiseThereIsnoGap();
 		}
 	}
 	public void CollisionCheck() {
-		if(this.isThereCollisionAtLeft() || this.frontLeftDistanceSensor.getValue() < 250) {
+		if(this.isThereCollisionAtLeft()) {
 			System.out.println("OUPS! obstacle left" );
 			theCtrl.raiseThereIsAnObstacle();	
 		}
-		else if(this.isThereCollisionAtRight() || this.frontRightDistanceSensor.getValue() < 250) {
+		else if(this.isThereCollisionAtRight()) {
 			System.out.println("OUPS! obstacle right ");
 			theCtrl.raiseThereIsAnObstacle();
 		}
-		else if( this.frontDistanceSensor.getValue() < 200 || this.frontRightDistanceSensor.getValue() < 250 || this.frontLeftDistanceSensor.getValue() < 250){
+		else if( this.frontDistanceSensor.getValue() < 200 || this.frontLeftDistanceSensor.getValue() < 200 || this.frontRightDistanceSensor.getValue() < 200){
 			System.out.println("OUPS! a front obstacle");
 			theCtrl.raiseThereIsAFrontObstacle();
+		}
+		else if( !(this.frontDistanceSensor.getValue() < 200 || this.frontLeftDistanceSensor.getValue() < 200 || this.frontRightDistanceSensor.getValue() < 200)){
+			theCtrl.raiseThereIsNoObstacleFront();
 		}
 		
 	}
@@ -321,18 +328,18 @@ public class PolyCreateControler extends Supervisor {
 		
 		if(ojsf.length >= 1) {
 				if(this.closeToObject(ojsf)) {
-					System.out.println("OUPS! an object");
+					System.out.println("OUPS! an object front");
 					System.out.println("I saw "+" on front Camera at : "+ojsf[0].getPosition()[0]);
 					theCtrl.raiseThereIsAnObjectFront();
 				}
 		}
-		if(ojsb.length >= 1) {
+		else if(ojsb.length >= 1) {
 			if(this.gripperCloseToObject(ojsb)) {
-				System.out.println("OUPS! an object");
+				System.out.println("I see the object back");
 				System.out.println("I saw "+" on back Camera at : "+ojsb[0].getPosition()[0]);
 				theCtrl.raiseThereIsAnObjectBack();
 			}
-	}
+		}
 	}
 		
 	
@@ -372,20 +379,20 @@ public class PolyCreateControler extends Supervisor {
 		double a = yObj-yRob;
 		double b = xObj-xRob;
 		double c = Math.sqrt((a*a)+(b*b));
-		if(c < 4)
+		if(c < 0.1)
 			return true;
 		return false;
 	}
 	
-	public boolean gripperCloseToObject(CameraRecognitionObject[] ojs) {
-		double xObj = this.gripperSensor.getValue();
-		double yObj = Math.round(ojs[0].getPosition()[0]*180/Math.PI) ;
-		double xRob = Math.round(this.getSelf().getPosition()[0]);
-		double yRob = Math.round(this.getSelf().getPosition()[2]);
+	public boolean gripperCloseToObject(CameraRecognitionObject[] ojsb) {
+		/*double xObj = ((double)Math.round(ojsb[0].getPosition()[1]*1000))/10;
+		double yObj = Math.round(ojsb[0].getPosition()[0]*180/Math.PI) ; 
+		double xGripper = Math.round(this.getSelf().getPosition()[0]);
+		double yGripper = Math.round(this.getSelf().getPosition()[2]);
 		double a = yObj-yRob;
-		double b = xObj-xRob;
-		double c = Math.sqrt((a*a)+(b*b));
-		if(c < 4)
+		double b = xObj-xRob;*/
+		double c = this.getObjectDistanceToGripper();
+		if(c < 0.05)
 			return true;
 		return false;
 	}
