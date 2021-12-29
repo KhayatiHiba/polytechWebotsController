@@ -15,7 +15,7 @@ public class MyObserverMoveFront implements Observer {
 		@Override
 		public void next(Object value) {
 			// TODO Auto-generated method stub
-			//System.out.println("Moving front");
+			System.out.println("Moving front");
 			theController.goForward();
 			
 		}

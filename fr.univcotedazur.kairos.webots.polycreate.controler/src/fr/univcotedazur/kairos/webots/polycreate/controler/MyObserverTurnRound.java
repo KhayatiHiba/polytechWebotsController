@@ -14,7 +14,7 @@ public class MyObserverTurnRound implements Observer {
 			@Override
 			public void next(Object value) {
 				// TODO Auto-generated method stub
-				System.out.println("I see an Object");
+				System.out.println("turning round");
 				theController.turnRound();
 				
 			}

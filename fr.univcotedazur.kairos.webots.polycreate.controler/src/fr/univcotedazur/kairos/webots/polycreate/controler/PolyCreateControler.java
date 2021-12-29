@@ -14,6 +14,7 @@ package fr.univcotedazur.kairos.webots.polycreate.controler;
 import java.util.Random;
 
 import javax.swing.Timer;
+import javax.swing.text.Position;
 
 import fr.univcotedazur.kairos.webots.polycreate.controler.Statechart2;
 
@@ -40,11 +41,11 @@ import com.yakindu.core.rx.Observer;
 
 public class PolyCreateControler extends Supervisor {
 
-	static int MAX_SPEED = 16;
+	static int MAX_SPEED = 18;
 	static int NULL_SPEED = 0;
-	static int HALF_SPEED = 8;
-	static int MIN_SPEED = -16;
-	static double turnPrecision= 0.3;
+	static int HALF_SPEED = 6;
+	static int MIN_SPEED = -18;
+	static double turnPrecision= 0.25;
 
 	static double WHEEL_RADIUS = 0.031;
 	static double AXLE_LENGTH = 0.271756;
@@ -100,16 +101,25 @@ public class PolyCreateControler extends Supervisor {
 
 	//added modification
 	public Statechart2 theCtrl;
-	//private boolean isTurning = false;
+	CheckHelper theChecker;
+	//boolean 
 	private boolean isTurning = false;
+	public boolean carryObject = false;
+	public boolean facingTheObject = false;
+	//saving robot position
+	public double robotSavedPositionX;
+	public double robotSavedPositionY;
+	public double robotSavedOrientation;
 
 
 
 	public PolyCreateControler() {
 		timestep = (int) Math.round(this.getBasicTimeStep());
+		this.carryObject = false;
 
 /////////added
 		theCtrl = new Statechart2(); 
+		theChecker = new CheckHelper(this);
 		TimerService timer = new TimerService();
 		theCtrl.setTimerService(timer);
 
@@ -184,11 +194,14 @@ public class PolyCreateControler extends Supervisor {
 		theCtrl.getCheck().subscribe(new MyObserverCheck(this));
 		theCtrl.getMoveBack().subscribe(new MyObserverMoveBack(this));
 		theCtrl.getTurnRound().subscribe(new MyObserverTurnRound(this));
+		theCtrl.getFullTurn().subscribe(new MyObserverFullTurn(this));
 		theCtrl.getStop().subscribe(new MyObserverStop(this));
 		theCtrl.getTurnRound().subscribe(new MyObserverTurnRound(this));
 		theCtrl.getGrip().subscribe(new MyObserverGrip(this));
 		theCtrl.getDoPW().subscribe(new MyObserverPassiveWait(this));
-	
+		theCtrl.getSaveRobotPosition().subscribe(new MyObserverSaveRobotPosition(this));
+		theCtrl.getCheckGripping().subscribe(new MyObserverCheckGripping(this));
+		theCtrl.getFaceObject().subscribe(new MyObserverFaceObject(this));
 		
 		theCtrl.enter();
 
@@ -204,18 +217,22 @@ public class PolyCreateControler extends Supervisor {
 			}
 		});
 	}
-////////////////////////////////////////
+		///////////////////////////////
 
 	//////stateChart Methods//////
 	public void check() {
-		this.freePathCheck();
-		this.CollisionCheck();
-		this.objectCheck();
-		this.gapAndStairsCheck();
+		this.theChecker.freePathCheck();
+		this.theChecker.CollisionCheck();
+		this.theChecker.objectCheck();
+		this.theChecker.gapAndStairsCheck();
+		this.theChecker.objectCheckBack();	
+		this.checkGripping();
 	}
+	
+	
 	public void dodgeObstacle() {
-		double orientActual = Math.acos(this.getSelf().getOrientation()[0]);
-		this.turn(Math.PI/6);
+		//double orientActual = Math.acos(this.getSelf().getOrientation()[0]);
+		this.turn(Math.PI/4);
 	}
 	
 	public void goForward() {
@@ -243,17 +260,86 @@ public class PolyCreateControler extends Supervisor {
 		gripMotors[1].setPosition(-0.2);
 	}
 	
+	public void saveRobotPosition() {
+		this.robotSavedPositionX = Math.round(this.getSelf().getPosition()[0]);
+		//System.out.println("position x saved: "+this.robotSavedPositionX);
+		this.robotSavedPositionY = Math.round(this.getSelf().getPosition()[2]);
+		//System.out.println("position y saved: "+this.robotSavedPositionY);
+		this.robotSavedOrientation = Math.acos(this.getSelf().getOrientation()[0]);
+		//System.out.println("orientation saved: "+this.robotSavedOrientation);
+	}
+	
+	public void faceObject() {
+		// TODO Auto-generated method stub
+		CameraRecognitionObject[] ojsf = this.frontCamera.getRecognitionObjects();
+		double angleRotation = 0.0;
+		double robotOrientation = this.getOrientation();
+		double objectOrientation = ojsf[0].getOrientation()[0];
+		if(robotOrientation > 0 && objectOrientation > 0) {
+			if(objectOrientation > robotOrientation) {
+				angleRotation =  objectOrientation - robotOrientation;
+			}
+			else {
+				angleRotation = robotOrientation - objectOrientation;
+			}
+		}
+		else if(robotOrientation < 0 && objectOrientation < 0) {
+			if(objectOrientation > robotOrientation) {
+				angleRotation =  robotOrientation - objectOrientation ;
+			}
+			else {
+				angleRotation = objectOrientation - robotOrientation;
+			}
+		}
+		System.out.println("angle rotation" + angleRotation);
+		System.out.println("object orientation" + objectOrientation);
+		System.out.println("robot orientationn" + robotOrientation);
+		this.turn(angleRotation);
+		this.checkFacingTheObject();
+		
+	}
+	
 	public void grip() {
 		// TODO Auto-generated method stub
 		this.openGripper();
 		this.goBackward();
 		this.closeGripper();
+		this.stop();
+		carryObject = true;
+	}
+	
+	/**
+	 * 
+	 */
+	public void checkGripping() {
+		if(this.carryObject) {
+			theCtrl.raiseTheObjectIsGrip();
+		}
+	}
+	
+	public void checkFacingTheObject() {
+		CameraRecognitionObject[] ojsf = this.frontCamera.getRecognitionObjects();
+		if(ojsf.length != 0) {
+			//System.out.println("i'm checking if i'm facing the object");
+			double robotOrientation = this.getOrientation();
+			double objectOrientation = ojsf[0].getOrientation()[0];
+			if(robotOrientation == objectOrientation) {
+				this.facingTheObject = true;
+				theCtrl.raiseIsFacingTheObject();
+			}
+		}
 		
 	}
 	
 	public void turnRound() {
-		double orientActual = Math.acos(this.getSelf().getOrientation()[0]);
-		this.turn(orientActual + Math.PI);
+		this.turn(Math.PI/2 + 0.263999383);
+		theCtrl.raiseThereIsNoObstacle();
+	}
+	
+	public void fullTurn() {
+		this.turn(Math.PI);
+		flushIRReceiver();
+		this.theChecker.freePathCheck();
 	}
 	
 	/**
@@ -273,7 +359,7 @@ public class PolyCreateControler extends Supervisor {
 		do {
 			actualOrientation = this.getOrientation();
 			doStep();
-		} while (!(actualOrientation > (targetOrientation -turnPrecision) && actualOrientation < (targetOrientation + turnPrecision)));
+		} while (!(actualOrientation > (targetOrientation - turnPrecision) && actualOrientation < (targetOrientation + turnPrecision)));
 		stop();
 		doStep();
 		this.isTurning=false;
@@ -281,95 +367,23 @@ public class PolyCreateControler extends Supervisor {
 	
 	
 	
-	/////checking methods//////
-	
-	public void freePathCheck() {
-		if(!(this.isThereVirtualwall())) {
-			theCtrl.raiseThereIsNoObstacle();
-		}
-		else if(this.isThereVirtualwall()) {
-			System.out.println("OUPS! a virtual wall");
-			theCtrl.raiseThereIsAVirtualWall();/// cas pas encore géré totalement **********
-		}
-	}
-	public void gapAndStairsCheck() {
-		if (this.frontRightCliffSensor.getValue() == 0 || this.frontLeftCliffSensor.getValue() == 0 || 
-				this.leftCliffSensor.getValue() == 0 || this.rightCliffSensor.getValue() == 0){
-			System.out.println("OUPS! a gap down ");
-			theCtrl.raiseThereIsAGapDown();
-		}
-		
-		else if (!(this.frontRightCliffSensor.getValue() == 0 || this.frontLeftCliffSensor.getValue() == 0 || 
-				this.leftCliffSensor.getValue() == 0 || this.rightCliffSensor.getValue() == 0) ){
-			theCtrl.raiseThereIsnoGap();
-		}
-	}
-	public void CollisionCheck() {
-		if(this.isThereCollisionAtLeft()) {
-			System.out.println("OUPS! obstacle left" );
-			theCtrl.raiseThereIsAnObstacle();	
-		}
-		else if(this.isThereCollisionAtRight()) {
-			System.out.println("OUPS! obstacle right ");
-			theCtrl.raiseThereIsAnObstacle();
-		}
-		else if( this.frontDistanceSensor.getValue() < 200 || this.frontLeftDistanceSensor.getValue() < 200 || this.frontRightDistanceSensor.getValue() < 200){
-			System.out.println("OUPS! a front obstacle");
-			theCtrl.raiseThereIsAFrontObstacle();
-		}
-		else if( !(this.frontDistanceSensor.getValue() < 200 || this.frontLeftDistanceSensor.getValue() < 200 || this.frontRightDistanceSensor.getValue() < 200)){
-			theCtrl.raiseThereIsNoObstacleFront();
-		}
-		
-	}
-	public void objectCheck() {
-		CameraRecognitionObject[] ojsf = this.frontCamera.getRecognitionObjects();
-		CameraRecognitionObject[] ojsb = this.backCamera.getRecognitionObjects();
-		
-		if(ojsf.length >= 1) {
-				if(this.closeToObject(ojsf)) {
-					System.out.println("OUPS! an object front");
-					System.out.println("I saw "+" on front Camera at : "+ojsf[0].getPosition()[0]);
-					theCtrl.raiseThereIsAnObjectFront();
-				}
-		}
-		else if(ojsb.length >= 1) {
-			if(this.gripperCloseToObject(ojsb)) {
-				System.out.println("I see the object back");
-				System.out.println("I saw "+" on back Camera at : "+ojsb[0].getPosition()[0]);
-				theCtrl.raiseThereIsAnObjectBack();
-			}
-		}
-	}
-		
-	
 	//////helping check methods//////
 	/**
 	 * give the obstacle distance from the gripper sensor. max distance (i.e., no obstacle detected) is 1500
 	 * @return
 	 */
-	public double getObjectDistanceToGripper() {
-		return gripperSensor.getValue();
-	}
+	public double getObjectDistanceToGripper() { return gripperSensor.getValue();}
 
-	public boolean isThereCollisionAtLeft() {
-		return leftBumper.getValue() != 0.0 ;
-		
-	}
+	public boolean isThereCollisionAtLeft() { return leftBumper.getValue() != 0.0 ;}
 
-	public boolean isThereCollisionAtRight() {
-		return (rightBumper.getValue() != 0.0 );
-	}
+	public boolean isThereCollisionAtRight() { return (rightBumper.getValue() != 0.0 );}
 
 	public void flushIRReceiver() {
 		while (receiver.getQueueLength() > 0)
 			receiver.nextPacket();
 	}
 
-	public boolean isThereVirtualwall() {
-		return (receiver.getQueueLength() > 1);
-		
-	}
+	public boolean isThereVirtualwall() { return (receiver.getQueueLength() > 1);}
 	
 	public boolean closeToObject(CameraRecognitionObject[] ojs) {
 		double xObj = ((double)Math.round(ojs[0].getPosition()[1]*1000))/10;
@@ -379,20 +393,16 @@ public class PolyCreateControler extends Supervisor {
 		double a = yObj-yRob;
 		double b = xObj-xRob;
 		double c = Math.sqrt((a*a)+(b*b));
-		if(c < 0.1)
+		//System.out.println(c+"close object");
+		if(c < 3 && this.facingTheObject)
 			return true;
 		return false;
 	}
 	
 	public boolean gripperCloseToObject(CameraRecognitionObject[] ojsb) {
-		/*double xObj = ((double)Math.round(ojsb[0].getPosition()[1]*1000))/10;
-		double yObj = Math.round(ojsb[0].getPosition()[0]*180/Math.PI) ; 
-		double xGripper = Math.round(this.getSelf().getPosition()[0]);
-		double yGripper = Math.round(this.getSelf().getPosition()[2]);
-		double a = yObj-yRob;
-		double b = xObj-xRob;*/
 		double c = this.getObjectDistanceToGripper();
-		if(c < 0.05)
+		//System.out.println(c + "close gripper");
+		if(c < 145)
 			return true;
 		return false;
 	}
@@ -415,19 +425,11 @@ public class PolyCreateControler extends Supervisor {
 		} while (start_time + sec > getTime());
 	}
 		
-	void doStep() {
-	//	System.out.println("i am in dostep ");
-		step(timestep);
-		//System.out.println("end of dostep ");
-	}
+	void doStep() { step(timestep);}
 
-	public double randdouble() {
-		return  random.nextDouble();
-	}
+	public double randdouble() { return  random.nextDouble();}
 
-	public double[] getPosition() {
-		return gps.getValues();
-	}
+	public double[] getPosition() { return gps.getValues();}
 	
 	/**
 	 * 
@@ -449,89 +451,14 @@ public class PolyCreateControler extends Supervisor {
 		
 		System.out.println("let's start");
 		PolyCreateControler controler = new PolyCreateControler();
-
-		
 		while(true) {
-//			//if(!controler.isTurning) {
-//				controler.passiveWait(0.5);
 				try {
 					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-////			}else {
-////				try {
-////					Thread.sleep(100);
-////				} catch (InterruptedException e) {
-////					// TODO Auto-generated catch block
-////					e.printStackTrace();
-////				}
-////			}
 		}
-
-		/*try {
-			controler.openGripper();
-			controler.pen.write(true);
-			controler.ledOn.set(1);
-			controler.passiveWait(0.5);
-			System.out.println("let's start");
-			while (true) {
-				/**
-				 * The position and orientation are expressed relatively to the camera (the relative position is the one of the center of the object which can differ from its origin) and the units are meter and radian.
-				 * https://www.cyberbotics.com/doc/reference/camera?tab-language=python#wb_camera_has_recognition
-				 */
-				/*Node anObj = controler.getFromDef("can"); //should not be there, only to have another orientation for testing...
-				controler.passiveWait(0.1);
-				
-			//	System.out.println("the orientation of the can is " +controler.computeRelativeObjectOrientation(anObj.getPosition(),anObj.getOrientation()));
-				
-				System.out.println("->  the orientation of the robot is " +Math.atan2(controler.getSelf().getOrientation()[0], controler.getSelf().getOrientation()[8]));
-				System.out.println("    the position of the robot is " +Math.round(controler.getSelf().getPosition()[0]*100)+";"+Math.round(controler.getSelf().getPosition()[2]*100));
-
-				System.out.println("    front distance: "+controler.frontDistanceSensor.getValue());
-				
-				CameraRecognitionObject[] backObjs = controler.backCamera.getRecognitionObjects();
-				if (backObjs.length > 0) {
-					CameraRecognitionObject obj = backObjs[0];
-					int oid = obj.getId();
-//					Node obj2 = controler.getFromId(oid);
-					double[] backObjPos = obj.getPosition();
-					/**
-					 * The position and orientation are expressed relatively to the camera (the relative position is the one of the center of the object which can differ from its origin) and the units are meter and radian.
-					 */
-					/*System.out.println("        I saw an object on back Camera at : "+backObjPos[0]+","+backObjPos[1]);
-				}
-				CameraRecognitionObject[] frontObjs = controler.frontCamera.getRecognitionObjects();
-				if (frontObjs.length > 0) {
-					for(CameraRecognitionObject obj : frontObjs) {
-						double[] frontObjPos = obj.getPosition();
-						System.out.println("        I saw "+obj.getModel()+" on front Camera at : "+((double)Math.round(frontObjPos[1]*1000))/10+"; "+Math.round(frontObjPos[0]*180/Math.PI));
-					}
-				}
-				System.out.println("         gripper distance sensor is "+controler.getObjectDistanceToGripper());
-				if (controler.isThereVirtualwall()) {
-					System.out.println("Virtual wall detected\n");
-					controler.turn(Math.PI);
-				} else if (controler.isThereCollisionAtLeft() || controler.frontLeftDistanceSensor.getValue() < 250) {
-					System.out.println("          Left obstacle detected\n");
-					controler.goBackward();
-					controler.passiveWait(0.5);
-					controler.turn(Math.PI * controler.randdouble()+0.6);
-				} else if (controler.isThereCollisionAtRight()|| controler.frontRightDistanceSensor.getValue() < 250 || controler.frontDistanceSensor.getValue() < 250) {
-					System.out.println("          Right obstacle detected\n");
-					controler.goBackward();
-					controler.passiveWait(0.5);
-					controler.turn(-Math.PI * controler.randdouble()+0.6);
-				} else {
-					controler.goForward();
-				}
-				controler.flushIRReceiver();
-			}
-
-		}catch (Exception e) {
-			controler.delete();
-		}*/
 
 	}
 
@@ -541,6 +468,8 @@ public class PolyCreateControler extends Supervisor {
 		this.delete();
 		super.finalize();
 	}
+
+	
 
 	
 
