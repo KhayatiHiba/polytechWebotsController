@@ -15,7 +15,7 @@ public class MyObserverCheckGripping implements Observer {
 	public void next(Object value) {
 		// TODO Auto-generated method stub
 		//System.out.println("checking");
-		theController.checkGripping();
+		theController.grip();
 		
 	}
 }

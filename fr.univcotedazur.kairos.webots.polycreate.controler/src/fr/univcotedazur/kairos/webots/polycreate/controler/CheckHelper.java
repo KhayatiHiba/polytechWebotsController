@@ -87,42 +87,35 @@ public class CheckHelper {
 	
 	
 	/**
-	 * 
+	 * Defines the behavior of the front camera detection system. 
+	 * When an object is seen on the camera, it raises the presence of the object. 
+	 * Then based on the presence or lack thereof an obstacle on the way to the object; 
+	 * the object is caught by the gripper.
 	 */
 	public void objectCheck() {
-		CameraRecognitionObject[] ojsf = controler.frontCamera.getRecognitionObjects();
+		CameraRecognitionObject[] frontObjects = controler.frontCamera.getRecognitionObjects();
 		
-		if(ojsf.length >= 1) {
-				//if(controler.closeToObject(ojsf)) {
-					//System.out.println("OUPS! an object front");
-					//System.out.println("I saw "+" on front Camera at : "+ojsf[0].getPosition()[0]);
-					if(controler.carryObject == false) {
-						controler.theCtrl.raiseThereIsAnObjectFront();
-					}
-					else {
-						controler.theCtrl.raiseThereIsAnObstacle();
-					}
-					
-				//}
-		}
+		if (frontObjects.length >= 1 ) {
+			controler.theCtrl.raiseThereIsAnObject();
+	    }
+	    if(controler.getObjectDistanceToGripper() < 120) {
+	    	controler.theCtrl.raiseReadyToGrip();
+	    }
 	}
 	
 	
 	/**
-	 * 
+	 * Defines the behavior of the back camera detection system. 
+	 * When an object is seen on the camera, it raises the presence of the object if it is
+	 * close enough to be caught by the gripper.
 	 */
 	public void objectCheckBack() {
-		CameraRecognitionObject[] ojsb = controler.backCamera.getRecognitionObjects();
+		CameraRecognitionObject[] backObjects = controler.backCamera.getRecognitionObjects();
 		
-		if(ojsb.length >= 1) {
-			if(controler.gripperCloseToObject(ojsb)) {
-				//System.out.println("I see the object back");
-				//System.out.println("I saw "+" on back Camera at : "+ojsb[0].getPosition()[0]);
-				controler.theCtrl.raiseTheGripIsClose();
-			}
-			else {
-				controler.theCtrl.raiseTheGripIsNotClose();
-			}
+		if(backObjects.length >= 1) {
+			if(controler.getObjectDistanceToGripper() < 120) {
+		    	controler.theCtrl.raiseReadyToGrip();
+		    }
 		}
 	}
 	

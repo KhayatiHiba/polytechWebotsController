@@ -80,7 +80,7 @@ Wall {
   size 1.3 2.4 0.3
 }
 Door {
-  hidden translation_5 1.5320464896717567e-09 0 0.0010000036568935666
+  hidden translation_5 1.598657206614007e-09 0 0.001000003815888939
   translation 0 0 1.65
   rotation 0 1 0 3.14159
   size 1 2.4 0.3
@@ -1321,7 +1321,7 @@ Robot {
   supervisor TRUE
 }
 DEF can Can {
-  translation 0.71 0.0608594 1.94
+  translation -1.55 0.0608594 1.94
   rotation -0.7715825068552147 0.45768877526795004 0.4417934133831633 -8.791370622521705e-17
 }
 DEF can Can {
