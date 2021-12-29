@@ -14,7 +14,6 @@ public class MyObserverTurn implements Observer {
 
 		@Override
 		public void next(Object value) {
-			// TODO Auto-generated method stub
 			System.out.println("Turning");
 			theController.dodgeObstacle();
 			

@@ -229,10 +229,13 @@ public class PolyCreateControler extends Supervisor {
 		this.checkGripping();
 	}
 	
-	
+	/**
+	 * Method used to dodge an obstacle while cleaning. 
+	 * It turns the robot by a PI/4 angle.
+	 */
 	public void dodgeObstacle() {
-		//double orientActual = Math.acos(this.getSelf().getOrientation()[0]);
 		this.turn(Math.PI/4);
+		theCtrl.raiseThereIsNoObstacle();
 	}
 	
 	public void goForward() {
