@@ -9,31 +9,61 @@ public class CheckHelper {
 		this.controler = poly;
 	}
 
-/////checking methods//////
-	
 	/**
-	 * 
+	 * Detects obstacles in the environment using the distance sensors. 
+	 * When the robot approaches an obstacle it raises it's presence. 
+	 * In the special cases where the sensors cannot detect the obstacles,
+	 * this function will relies on the bumpers to detect a collision.
 	 */
-	public void freePathCheck() {
-		if(!(controler.isThereVirtualwall())) {
+	public void CollisionCheck() {
+		if(controler.frontLeftDistanceSensor.getValue() < 250 || controler.isThereCollisionAtLeft()) {
+			System.out.println("Obstacle at left detected\n" );
+			controler.theCtrl.raiseThereIsAnObstacle();	
+		}
+		else if(controler.frontRightDistanceSensor.getValue() < 250 ||controler.isThereCollisionAtRight()) {
+			System.out.println("Obstacle at right detected\n" );
+			controler.theCtrl.raiseThereIsAnObstacle();
+		}
+		else if( controler.frontDistanceSensor.getValue() < 250){
+			System.out.println("Front Obstacle detected\n" );
+			controler.theCtrl.raiseThereIsAFrontObstacle();
+		}
+		else if( controler.frontDistanceSensor.getValue() < 250 || controler.frontLeftDistanceSensor.getValue() < 250 || controler.frontRightDistanceSensor.getValue() < 250){
+			System.out.println("Front Obstacle detected\n" );
+			controler.theCtrl.raiseThereIsAFrontObstacle();
+		}
+		else if( !(controler.frontDistanceSensor.getValue() < 250)){
+			controler.theCtrl.raiseThereIsNoObstacleFront();
+		}
+		else if( !(controler.frontDistanceSensor.getValue() < 250 || controler.frontLeftDistanceSensor.getValue() < 250 || controler.frontRightDistanceSensor.getValue() < 250)){
+			controler.theCtrl.raiseThereIsNoObstacleFront();
+		}
+		else {
 			controler.theCtrl.raiseThereIsNoObstacle();
 		}
-		else if(controler.isThereVirtualwall()) {
-			System.out.println("OUPS! a virtual wall");
-			controler.theCtrl.raiseThereIsAVirtualWall();/// cas pas encore géré totalement **********
-		}
+		
 	}
 	
 	/**
+	 * Determines the presence of a cliff using the distance sensors located under the robot.
+	 * Two distance sensors are located at the front of the robot detecting thus a cliff in the front.
+	 * While two remaining on each side of the robot detecting cliffs on either side.
 	 * 
+	 * When the robot approaches a cliff it raises it's presence and declares the side. 
 	 */
 	public void gapAndStairsCheck() {
-		if ((controler.frontRightCliffSensor.getValue() == 0 || controler.frontLeftCliffSensor.getValue() == 0 || 
-				controler.leftCliffSensor.getValue() == 0 || controler.rightCliffSensor.getValue() == 0) ){
-			System.out.println("OUPS! a gap down ");
+		if ((controler.frontRightCliffSensor.getValue() == 0 && controler.frontLeftCliffSensor.getValue() == 0)) {
+			System.out.println("A gap detected in front of the robot\n ");
 			controler.theCtrl.raiseThereIsAGapDown();
 		}
-		
+		else if ((controler.leftCliffSensor.getValue() == 0 )) {
+			System.out.println("A gap detected in the left of the robot\n ");
+			controler.theCtrl.raiseThereIsAGapDown();
+		}
+		else if ((controler.rightCliffSensor.getValue() == 0) ){
+			System.out.println("A gap detected in the right of the robot\n ");
+			controler.theCtrl.raiseThereIsAGapDown();
+		}
 		else if (!(controler.frontRightCliffSensor.getValue() == 0 || controler.frontLeftCliffSensor.getValue() == 0 || 
 				controler.leftCliffSensor.getValue() == 0 || controler.rightCliffSensor.getValue() == 0) ){
 			controler.theCtrl.raiseThereIsnoGap();
@@ -41,26 +71,20 @@ public class CheckHelper {
 	}
 	
 	/**
-	 * 
+	 * Determines if there's a presence of a virtual wall detected in the receiver's queue.
+	 * When the robot approaches a virtual wall it raises it's presence. 
 	 */
-	public void CollisionCheck() {
-		if(controler.isThereCollisionAtLeft()) {
-			System.out.println("OUPS! obstacle left" );
-			controler.theCtrl.raiseThereIsAnObstacle();	
+	public void freePathCheck() {
+		if(controler.isThereVirtualwall()) {
+			System.out.println("Virtual wall detected\n");
+			controler.theCtrl.raiseThereIsAVirtualWall();
 		}
-		else if(controler.isThereCollisionAtRight()) {
-			System.out.println("OUPS! obstacle right ");
-			controler.theCtrl.raiseThereIsAnObstacle();
+		else {
+			controler.theCtrl.raiseThereIsNoVirtualWall();
 		}
-		else if( controler.frontDistanceSensor.getValue() < 200 || controler.frontLeftDistanceSensor.getValue() < 200 || controler.frontRightDistanceSensor.getValue() < 200){
-			System.out.println("OUPS! a front obstacle");
-			controler.theCtrl.raiseThereIsAFrontObstacle();
-		}
-		else if( !(controler.frontDistanceSensor.getValue() < 200 || controler.frontLeftDistanceSensor.getValue() < 200 || controler.frontRightDistanceSensor.getValue() < 200)){
-			controler.theCtrl.raiseThereIsNoObstacleFront();
-		}
-		
 	}
+	
+	
 	
 	/**
 	 * 
