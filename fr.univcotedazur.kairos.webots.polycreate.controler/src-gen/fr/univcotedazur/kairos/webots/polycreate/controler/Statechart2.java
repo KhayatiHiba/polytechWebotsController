@@ -1551,10 +1551,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			if (theObjectIsGrip) {
-				raiseSaveRobotPosition();
-			}
-			if (theObjectIsGrip) {
+			if (gripObject) {
 				raiseSaveRobotPosition();
 			}
 			transitioned_after = move_robot_is_running_R_gion__robots_and_object_react(transitioned_before);

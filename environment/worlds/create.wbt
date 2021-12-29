@@ -12,7 +12,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation 0.7908693603383237 0.46593691125744024 0.39677254139610896 4.638520835158328
-  position -3.155698322165908 13.51253758852321 5.7994523591156675
+  position -2.2572973660127755 6.464484185854562 5.104531656112944
   near 0.1
   follow "Create"
 }
@@ -80,11 +80,11 @@ Wall {
   size 1.3 2.4 0.3
 }
 Door {
-  hidden translation_5 1.598657206614007e-09 0 0.001000003815888939
+  hidden translation_5 1.7786033201794282e-09 0 0.0010000042454085256
   translation 0 0 1.65
   rotation 0 1 0 3.14159
   size 1 2.4 0.3
-  position -3.347271062988433e-10
+  position -9.042517644102783e-10
 }
 Bed {
   translation -3.2800000002397445 0 -3.75
@@ -94,8 +94,8 @@ Table {
   translation 3.86254 0 3.28632
 }
 Solid {
-  translation 2.23 -0.00285774 1.9
-  rotation 0.8160219595449832 0.3196468170617602 -0.48159534246361985 3.3214645394343465e-17
+  translation 2.23 -0.0023927638306315002 1.9
+  rotation 0.4084355678247476 -0.5505906761334417 -0.7280317948349477 8.677876806837867e-17
   children [
     Shape {
       appearance PBRAppearance {
@@ -190,6 +190,8 @@ Solid {
   recognitionColors [
     0 0.1 0
   ]
+  linearVelocity 8.359323799442204e-17 2.8494004197343997e-06 -9.395412439249743e-17
+  angularVelocity -5.863820196696039e-16 3.5403594297871035e-17 -6.715956178422557e-16
 }
 Chair {
   translation 3.47751 0 3.72164
@@ -210,14 +212,14 @@ LandscapePainting {
   rotation 0 1 0 -1.5708
 }
 CreateWall {
-  hidden linearVelocity_0 6.22815090564706e-17 -3.9686422461002744e-05 2.6001854484811265e-17
-  hidden angularVelocity_0 9.905295506369587e-16 -1.5433842969123673e-16 -2.2041156818765904e-15
-  translation -3.16665 -7.340261953871913e-05 4.72729
-  rotation 3.9271627561560546e-17 1 -2.3423118527612687e-17 1.5708000000000002
+  hidden linearVelocity_0 2.507426588687282e-17 -3.134462676968989e-08 4.852176211947905e-17
+  hidden angularVelocity_0 1.4857994408296355e-15 -3.120246697391896e-17 -4.897989383066229e-16
+  translation -3.16665 -7.847598984776771e-05 4.72729
+  rotation 1.9504778761629605e-17 1 -3.535328538779516e-17 1.5708000000000002
 }
 DEF IROBOT_CREATE Robot {
-  translation -0.0192695 0.019531 4.46321
-  rotation 0.9994666692397797 0.0029869773387818563 -0.03251853387098509 0.027758964378735217
+  translation -0.0742828 0.038565 4.382
+  rotation -0.30756498374134644 -0.9243879511345432 0.22563398807242363 -0.10366530717958611
   children [
     DEF BODY_SLOT Group {
       children [
@@ -393,7 +395,7 @@ DEF IROBOT_CREATE Robot {
             }
             DEF RIGHT_FINGER HingeJoint {
               jointParameters HingeJointParameters {
-                position -1.367779067905393e-07
+                position -2.8897030043895175e-07
                 axis -1 0 0
                 anchor 0 0 0.058
                 minStop -0.001
@@ -415,7 +417,7 @@ DEF IROBOT_CREATE Robot {
               ]
               endPoint Solid {
                 translation 0 0 0.058
-                rotation 1 0 0 0.343000136777907
+                rotation 1 0 0 0.34300028897030066
                 children [
                   DEF FINGER_SHAPE Transform {
                     translation -0.0007002 0.0360533 -0.0141252
@@ -698,7 +700,7 @@ DEF IROBOT_CREATE Robot {
             }
             DEF LEFT_FINGER HingeJoint {
               jointParameters HingeJointParameters {
-                position -1.3672664517622104e-07
+                position 1.4998246604469398e-08
                 anchor 0 0 0.058
                 minStop -0.001
                 maxStop 1.048
@@ -719,7 +721,7 @@ DEF IROBOT_CREATE Robot {
               ]
               endPoint Solid {
                 translation 0 0 0.058
-                rotation -9.07041075299047e-14 0.17066103443812997 0.985329798252599 3.14159
+                rotation 9.949798526969398e-15 0.17066095968860098 0.9853298111993597 3.14159
                 children [
                   USE FINGER_SHAPE
                   USE FINGER_CONNECTOR_SHAPE
@@ -998,7 +1000,7 @@ DEF IROBOT_CREATE Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position 1.9199994713672615
+        position 12.864781802783659
         axis -1 0 0
         anchor 0 -0.014 0.006176
       }
@@ -1013,8 +1015,8 @@ DEF IROBOT_CREATE Robot {
         }
       ]
       endPoint DEF CREATE_RIGHT_WHEEL Solid {
-        translation 0.135878 -0.014 0.006176
-        rotation -0.9999999999999999 0 0 1.9199994713672615
+        translation 0.13587799999999994 -0.014 0.006176
+        rotation -1 0 0 0.2984111884244859
         children [
           Transform {
             rotation 0 0 1 1.5708
@@ -1064,7 +1066,7 @@ DEF IROBOT_CREATE Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position 1.9199994761540184
+        position 7.491188999042301
         axis -1 0 0
         anchor 0 -0.014 0.006176
       }
@@ -1080,7 +1082,7 @@ DEF IROBOT_CREATE Robot {
       ]
       endPoint DEF CREATE_LEFT_WHEEL Solid {
         translation -0.135878 -0.014 0.006176
-        rotation -0.9999999999999999 0 0 1.9199994761540184
+        rotation 1 0 0 5.075181615316872
         children [
           Transform {
             rotation 0 0 1 1.5708
@@ -1119,8 +1121,8 @@ DEF IROBOT_CREATE Robot {
       channel 1
     }
     DEF CREATE_BUMPER_LEFT TouchSensor {
-      translation 2.3866998323171518e-06 -2.8270707424171704e-05 -0.0002397355486092323
-      rotation -4.9265397244213385e-08 0.9999999999999577 -2.8665801039420467e-07 0.7269319717657573
+      translation -4.503184501736257e-06 -3.2299037943661624e-05 -0.0002569929273139593
+      rotation -4.924344996111685e-08 0.9999999999999575 -2.868041601900686e-07 0.7269319726344134
       name "bumper_left"
       boundingObject DEF CREATE_BUMPER_BOUNDING_OBJECT Group {
         children [
@@ -1161,8 +1163,8 @@ DEF IROBOT_CREATE Robot {
       }
     }
     DEF CREATE_BUMPER_RIGHT TouchSensor {
-      translation 2.43717562543877e-06 -2.82670185723366e-05 -0.00024263418291514682
-      rotation 4.9472337077973703e-08 0.9999999999999574 -2.882321726505635e-07 -0.7269299720523124
+      translation 1.4976924990861562e-05 -3.215548308407867e-05 -0.0002567838166283032
+      rotation -4.938003238310776e-08 -0.9999999999999574 2.879290138127e-07 0.7269299711826428
       name "bumper_right"
       boundingObject USE CREATE_BUMPER_BOUNDING_OBJECT
       physics USE CREATE_BUMPER_PHYSICS
@@ -1321,14 +1323,19 @@ Robot {
   supervisor TRUE
 }
 DEF can Can {
-  translation -1.55 0.0608594 1.94
-  rotation -0.7715825068552147 0.45768877526795004 0.4417934133831633 -8.791370622521705e-17
+  hidden linearVelocity_0 -3.237956097608082e-17 6.367461044678785e-07 -4.756834554387989e-17
+  hidden angularVelocity_0 -8.479084729523221e-16 2.674417265703404e-16 3.8092379575835106e-16
+  translation -1.55 0.06096257856620235 1.94
+  rotation 0.11626408851530645 -0.5132643816981696 0.850318961450173 1.1668723971849181e-16
 }
 DEF can Can {
-  translation 0 0.0608594 1.56
-  rotation -0.7715825068552147 0.45768877526795004 0.4417934133831633 -8.791370622521705e-17
+  hidden linearVelocity_0 -1.8694040214292365e-17 6.367461044273355e-07 2.3747937323954564e-17
+  hidden angularVelocity_0 4.2395423647616124e-16 -2.7063506155500324e-17 2.3128792651676055e-16
+  translation -1.692996612298395e-18 0.06096257856620236 1.56
+  rotation 0.8236016473895048 -0.5129576573682695 -0.2419809252080645 1.8119426025022588e-16
   name "can(1)"
 }
 Apple {
-  translation -0.67 0.0297898 1.92
+  hidden linearVelocity_0 0 0.0001228412961548476 0
+  translation -0.67 0.04974885938067379 1.92
 }
