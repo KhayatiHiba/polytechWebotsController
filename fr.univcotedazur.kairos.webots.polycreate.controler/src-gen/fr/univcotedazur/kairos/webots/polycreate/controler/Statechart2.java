@@ -28,6 +28,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE,
 		MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL,
 		MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP,
+		MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK,
 		PASSIVE_WAIT_WAIT,
 		CHECK_CHECK,
 		$NULLSTATE$
@@ -182,6 +183,9 @@ public class Statechart2 implements IStatemachine, ITimed {
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
 			transitioned = move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop_react(transitioned);
 			break;
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
+			transitioned = move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block_react(transitioned);
+			break;
 		default:
 			break;
 		}
@@ -252,7 +256,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		switch (state) {
 		case MOVE_ROBOT_IS_RUNNING:
 			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP.ordinal();
+					MOVE_ROBOT_IS_RUNNING.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK.ordinal();
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE:
 			return stateVector[0].ordinal() >= State.
 					MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEFRONT.ordinal();
@@ -289,9 +293,11 @@ public class Statechart2 implements IStatemachine, ITimed {
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE;
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL:
 			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP.ordinal();
+					MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK.ordinal();
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP;
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
 		case PASSIVE_WAIT_WAIT:
 			return stateVector[2] == State.PASSIVE_WAIT_WAIT;
 		case CHECK_CHECK:
@@ -764,6 +770,11 @@ public class Statechart2 implements IStatemachine, ITimed {
 		raiseFullTurn();
 	}
 	
+	/* Entry action for state 'virtual block'. */
+	private void entryAction_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block() {
+		raiseTurnRound();
+	}
+	
 	/* Entry action for state 'wait'. */
 	private void entryAction_passive_wait_wait() {
 		timerService.setTimer(this, 2, 300, true);
@@ -899,6 +910,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 	private void enterSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default() {
 		entryAction_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
 		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP;
+		stateConfVectorPosition = 0;
+	}
+	
+	/* 'default' enter sequence for state virtual block */
+	private void enterSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block_default() {
+		entryAction_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
 		stateConfVectorPosition = 0;
 	}
 	
@@ -1058,6 +1076,12 @@ public class Statechart2 implements IStatemachine, ITimed {
 		stateConfVectorPosition = 0;
 	}
 	
+	/* Default exit sequence for state virtual block */
+	private void exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block() {
+		stateVector[0] = State.$NULLSTATE$;
+		stateConfVectorPosition = 0;
+	}
+	
 	/* Default exit sequence for state wait */
 	private void exitSequence_passive_wait_wait() {
 		stateVector[2] = State.$NULLSTATE$;
@@ -1109,6 +1133,9 @@ public class Statechart2 implements IStatemachine, ITimed {
 			break;
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
 			exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
+			break;
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
+			exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block();
 			break;
 		default:
 			break;
@@ -1193,6 +1220,9 @@ public class Statechart2 implements IStatemachine, ITimed {
 		switch (stateVector[0]) {
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
 			exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
+			break;
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
+			exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block();
 			break;
 		default:
 			break;
@@ -1622,6 +1652,32 @@ public class Statechart2 implements IStatemachine, ITimed {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
+			if (thereIsAVirtualWall) {
+				exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
+				enterSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block_default();
+				move_robot_is_running_R_gion__virtualWall_react(0);
+				
+				transitioned_after = 0;
+			}
+		}
+		/* If no transition was taken then execute local reactions */
+		if (transitioned_after==transitioned_before) {
+			transitioned_after = move_robot_is_running_R_gion__virtualWall_react(transitioned_before);
+		}
+		return transitioned_after;
+	}
+	
+	private long move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block_react(long transitioned_before) {
+		long transitioned_after = transitioned_before;
+		
+		if (transitioned_after<0) {
+			if (thereIsAVirtualWall) {
+				exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block();
+				enterSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default();
+				move_robot_is_running_R_gion__virtualWall_react(0);
+				
+				transitioned_after = 0;
+			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
