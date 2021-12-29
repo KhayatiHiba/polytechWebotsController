@@ -1312,20 +1312,12 @@ public class Statechart2 implements IStatemachine, ITimed {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
-			if (thereIsAVirtualWall) {
+			if (robotIsBlocked) {
 				exitSequence_move_robot_is_running_R_gion__robot_and_obstacle();
-				enterSequence_move_robot_is_running_R_gion__virtualWall_default();
+				enterSequence_move_robot_is_running_R_gion__blocage_default();
 				move_robot_is_running_react(0);
 				
 				transitioned_after = 0;
-			} else {
-				if (robotIsBlocked) {
-					exitSequence_move_robot_is_running_R_gion__robot_and_obstacle();
-					enterSequence_move_robot_is_running_R_gion__blocage_default();
-					move_robot_is_running_react(0);
-					
-					transitioned_after = 0;
-				}
 			}
 		}
 		/* If no transition was taken then execute local reactions */
@@ -1391,6 +1383,14 @@ public class Statechart2 implements IStatemachine, ITimed {
 						move_robot_is_running_react(0);
 						
 						transitioned_after = 0;
+					} else {
+						if (thereIsAVirtualWall) {
+							exitSequence_move_robot_is_running_R_gion__robot_and_obstacle();
+							enterSequence_move_robot_is_running_R_gion__virtualWall_default();
+							move_robot_is_running_react(0);
+							
+							transitioned_after = 0;
+						}
 					}
 				}
 			}
@@ -1635,7 +1635,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		if (transitioned_after<0) {
 			if (thereIsNoVirtualWall) {
 				exitSequence_move_robot_is_running_R_gion__virtualWall();
-				enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_default();
+				enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_default();
 				move_robot_is_running_react(0);
 				
 				transitioned_after = 0;
