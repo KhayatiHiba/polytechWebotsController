@@ -4,6 +4,7 @@ import com.cyberbotics.webots.controller.CameraRecognitionObject;
 
 public class CheckHelper {
 	private PolyCreateControler controler;
+	static double turnPrecision= 0.25;
 	
 	public CheckHelper(PolyCreateControler poly) {
 		this.controler = poly;
@@ -87,35 +88,50 @@ public class CheckHelper {
 	
 	
 	/**
-	 * Defines the behavior of the front camera detection system. 
-	 * When an object is seen on the camera, it raises the presence of the object. 
-	 * Then based on the presence or lack thereof an obstacle on the way to the object; 
-	 * the object is caught by the gripper.
+	 * 
 	 */
 	public void objectCheck() {
 		CameraRecognitionObject[] frontObjects = controler.frontCamera.getRecognitionObjects();
-		
-		if (frontObjects.length >= 1 ) {
-			controler.theCtrl.raiseThereIsAnObject();
-	    }
-	    if(controler.getObjectDistanceToGripper() < 120) {
-	    	controler.theCtrl.raiseReadyToGrip();
-	    }
+		if(frontObjects.length >= 1) {
+			CameraRecognitionObject firstobj = frontObjects[0];
+			
+			double[] frontObjPos = firstobj.getPosition();
+	        double xObj = frontObjPos[0];
+	        double yObj = frontObjPos[2]; 
+	        double angle = Math.atan(xObj/yObj*Math.PI/180);
+	        
+	        if(angle >= turnPrecision) {
+	            controler.turn(angle);
+	        }
+	     
+	        double distanceObj = Math.sqrt((xObj*xObj)+(yObj*yObj));
+			System.out.println("Distance from origin to object: "+ distanceObj);
+			
+			//double distanceRob = Math.sqrt((controler.getSelf().getPosition()[0]*controler.getSelf().getPosition()[0])+(controler.getSelf().getPosition()[2]*controler.getSelf().getPosition()[2]));
+			//System.out.println("Distance from origin to robot: "+ distanceRob);
+			
+			//double RobToObj = Math.abs(distanceRob-distanceObj);
+			//System.out.println("Distance between object and robot "+ RobToObj );
+			
+			if (Math.round(distanceObj-0.3) <=0) {
+				controler.theCtrl.raiseThereIsAnObject();
+			}
+		}
 	}
 	
 	
 	/**
-	 * Defines the behavior of the back camera detection system. 
-	 * When an object is seen on the camera, it raises the presence of the object if it is
-	 * close enough to be caught by the gripper.
+	 * 
 	 */
 	public void objectCheckBack() {
 		CameraRecognitionObject[] backObjects = controler.backCamera.getRecognitionObjects();
 		
 		if(backObjects.length >= 1) {
-			if(controler.getObjectDistanceToGripper() < 120) {
-		    	controler.theCtrl.raiseReadyToGrip();
-		    }
+			System.out.println("Distance between object and gripper "+ controler.getObjectDistanceToGripper() );
+			if(controler.getObjectDistanceToGripper() < 115) {
+				controler.theCtrl.raiseReadyToGrip();
+				System.out.println("I raised ready to grip\n");
+	        }
 		}
 	}
 	

@@ -44,6 +44,7 @@ public class PolyCreateControler extends Supervisor {
 	static int MAX_SPEED = 18;
 	static int NULL_SPEED = 0;
 	static int HALF_SPEED = 6;
+	static int TURN_SPEED = 1;
 	static int MIN_SPEED = -18;
 	static double turnPrecision= 0.25;
 
@@ -73,18 +74,22 @@ public class PolyCreateControler extends Supervisor {
 	public LED ledPlay = null;
 	public LED ledStep = null;
 
+	//Bumper sensors
 	public TouchSensor leftBumper = null;
 	public TouchSensor rightBumper = null;
 
+	//Cliff sensors
 	public DistanceSensor leftCliffSensor = null;
 	public DistanceSensor rightCliffSensor = null;
 	public DistanceSensor frontLeftCliffSensor = null;
 	public DistanceSensor frontRightCliffSensor = null;
 
+	//Distance sensors
 	public DistanceSensor frontDistanceSensor = null;
 	public DistanceSensor frontLeftDistanceSensor = null;
 	public DistanceSensor frontRightDistanceSensor = null;
 	
+	//Camera
 	public Camera frontCamera = null;
 	public Camera backCamera = null;
 
@@ -96,27 +101,33 @@ public class PolyCreateControler extends Supervisor {
 	public 	int timestep = Integer.MAX_VALUE;
 	public 	Random random = new Random();
 
+	//added modification
 	public Statechart2 theCtrl;
 	CheckHelper theChecker;
-	
+	//boolean 
 	private boolean isTurning = false;
 	public boolean carryObject = false;
 	public boolean facingTheObject = false;
-
+	//saving robot position
 	public double robotSavedPositionX;
 	public double robotSavedPositionY;
 	public double robotSavedOrientation;
 
+	public double distanceObj, distanceRob;
 
-
+	double yObj, xObj;
+	
 	public PolyCreateControler() {
 		timestep = (int) Math.round(this.getBasicTimeStep());
 		this.carryObject = false;
 
+/////////added
 		theCtrl = new Statechart2(); 
 		theChecker = new CheckHelper(this);
 		TimerService timer = new TimerService();
 		theCtrl.setTimerService(timer);
+
+		////////////
 		
 		pen = createPen("pen");
 
@@ -146,6 +157,7 @@ public class PolyCreateControler extends Supervisor {
 		leftBumper.enable(timestep);
 		rightBumper.enable(timestep);
 	
+
 		leftCliffSensor = createDistanceSensor("cliff_left");
 		rightCliffSensor = createDistanceSensor("cliff_right");
 		frontLeftCliffSensor = createDistanceSensor("cliff_front_left");
@@ -177,24 +189,32 @@ public class PolyCreateControler extends Supervisor {
 		gps.enable(timestep);
 		
 		
-		//observeurs
-		theCtrl.getTurn().subscribe( new MyObserverTurn(this));
+		///////////////////////////////// 			Observers start			///////////////////////////////////////////////////
+		
+		
+		//Simple movement
 		theCtrl.getMoveFront().subscribe( new MyObserverMoveFront(this));
-		theCtrl.getCheck().subscribe(new MyObserverCheck(this));
 		theCtrl.getMoveBack().subscribe(new MyObserverMoveBack(this));
+		theCtrl.getStop().subscribe(new MyObserverStop(this));
+	
+		//Turns 
+		theCtrl.getTurn().subscribe( new MyObserverTurn(this));
 		theCtrl.getTurnRound().subscribe(new MyObserverTurnRound(this));
 		theCtrl.getFullTurn().subscribe(new MyObserverFullTurn(this));
-		theCtrl.getStop().subscribe(new MyObserverStop(this));
-		theCtrl.getSituateSelf().subscribe(new MyObserverSituateSelf(this));
-		theCtrl.getTurnRound().subscribe(new MyObserverTurnRound(this));
+		
+		//Helpers
+		theCtrl.getCheck().subscribe(new MyObserverCheck(this));
+		
+		//Objects
+		theCtrl.getGripPosition().subscribe(new MyObserverGripPosition(this));
 		theCtrl.getGrip().subscribe(new MyObserverGrip(this));
+		
 		theCtrl.getDoPW().subscribe(new MyObserverPassiveWait(this));
 		theCtrl.getSaveRobotPosition().subscribe(new MyObserverSaveRobotPosition(this));
-		theCtrl.getCheckGripping().subscribe(new MyObserverCheckGripping(this));
-		theCtrl.getFaceObject().subscribe(new MyObserverFaceObject(this));
 		
-		theCtrl.enter();
 
+		///////////////////////////////// 			Observers end		///////////////////////////////////////////////////
+		theCtrl.enter();
 		PolyCreateControler ctrl = this;
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{
@@ -206,6 +226,8 @@ public class PolyCreateControler extends Supervisor {
 			}
 		});
 	}
+		///////////////////////////////
+
 	//////stateChart Methods//////
 	public void check() {
 		this.theChecker.freePathCheck();
@@ -213,8 +235,6 @@ public class PolyCreateControler extends Supervisor {
 		this.theChecker.objectCheck();
 		this.theChecker.gapAndStairsCheck();
 		this.theChecker.objectCheckBack();
-		System.out.println("Distance to object: "+ frontDistanceSensor.getValue());
-		System.out.println("Rear distance to the object : "+ getObjectDistanceToGripper());
 	}
 	
 	/**
@@ -259,71 +279,47 @@ public class PolyCreateControler extends Supervisor {
 		this.robotSavedOrientation = Math.acos(this.getSelf().getOrientation()[0]);
 		//System.out.println("orientation saved: "+this.robotSavedOrientation);
 	}
-	
-	public void faceObject() {
-		CameraRecognitionObject[] frontObjects = this.frontCamera.getRecognitionObjects();
-        CameraRecognitionObject firstobj = frontObjects[0];
+
+/**
+ * Method that position's the robot's in line with the gripper.
+ *
+ */
+	public void gripPosition() {
+		CameraRecognitionObject[] backObjects = backCamera.getRecognitionObjects();
+		if (backObjects.length == 0) {
+			turn(Math.PI + 0.263999383);
+		}
+		else if (backObjects.length > 0) {
+			CameraRecognitionObject firstBackObject = backObjects[0];
+				
+			int[] backObjectPosition = firstBackObject.getPositionOnImage();
+			int objectPosition = backObjectPosition[0];
         
-        double[] frontObjPos = firstobj.getPosition();
-        double x = frontObjPos[0];
-        double y = frontObjPos[1];
-        double angle = Math.atan(x/y*Math.PI/180);
-        
-		System.out.println("Closest object seen in :" + frontObjects.length);
-        System.out.println("Angle to turn : "+ angle);
-        while(angle < turnPrecision) {
-        	frontObjPos = firstobj.getPosition();
-            x = frontObjPos[0];
-            y = frontObjPos[1];
-            angle = Math.atan(x/y*Math.PI/180); 
-        }
-        turn(angle);
-        getCloser();
-        	
-	}
-	public void getCloser(){
-		goForward();
-        System.out.println("Distance to object: "+ frontDistanceSensor.getValue());
-        if(frontDistanceSensor.getValue() < 900) {
-        	System.out.println("Distance to object: "+ frontDistanceSensor.getValue());
-            stop();
-            theCtrl.raiseIsFacingTheObject();
-        }
-        openGripper();
-        System.out.println("Gripper opened\n");
-	}
-	
-	public void situateSelf() {
-		CameraRecognitionObject[] backObjects = this.backCamera.getRecognitionObjects();
-        CameraRecognitionObject firstobj = backObjects[0];
-        
-        double[] frontObjPos = firstobj.getPosition();
-        double x = frontObjPos[0];
-        double y = frontObjPos[1];
-        double angle = Math.atan(x/y*Math.PI/180);
-        if(angle >= turnPrecision) {
-            turn(angle);
-        }
-		if(getObjectDistanceToGripper() > 115) {
-	        goBackward();
-	        System.out.println("Rear distance to the object : "+ getObjectDistanceToGripper());
-	        
-	      }
-	      else {
-	        System.out.println("Final distance to the object : "+ getObjectDistanceToGripper());
-	        stop();
-	        theCtrl.raiseGripObject();
-	      }
-		
+			while (objectPosition > 128 || objectPosition< 123) {
+				this.isTurning=true;
+	    		stop();
+	    		doStep();
+	        	leftMotor.setVelocity(TURN_SPEED);
+	    		rightMotor.setVelocity(-TURN_SPEED);
+	    		System.out.println("The robot is turning");
+	    		System.out.println("Position of object is :" + objectPosition);
+	    		doStep();
+	    		System.out.println(" ");
+			}
+		this.isTurning=false;
+		}
+		System.out.println("I will stop ");
+		stop();
+		openGripper();
+		System.out.println("Gripper opened\n");
+		goBackward();
 	}
 	
 	public void grip() {
 		stop();
 		closeGripper();
-	    System.out.println("Gripper closed\n");
+		System.out.println("Gripper closed\n");
 	}
-	
-	
 	
 	public void turnRound() {
 		this.turn(Math.PI/2 + 0.263999383);
@@ -334,7 +330,6 @@ public class PolyCreateControler extends Supervisor {
 		this.turn(Math.PI);
 		flushIRReceiver();
 		this.theChecker.freePathCheck();
-		theCtrl.raiseReadyToGrip();
 	}
 	
 	/**
@@ -350,7 +345,7 @@ public class PolyCreateControler extends Supervisor {
 		rightMotor.setVelocity(-direction * HALF_SPEED);
 		double targetOrientation = (this.getOrientation()+angle)%(2*Math.PI);
 		double actualOrientation;
-		System.out.println("do");
+		System.out.println("The robot is turning");
 		do {
 			actualOrientation = this.getOrientation();
 			doStep();
@@ -364,8 +359,8 @@ public class PolyCreateControler extends Supervisor {
 	
 	//////helping check methods//////
 	/**
-	 * give the obstacle distance from the gripper sensor. max distance (i.e., no obstacle detected) is 1500
-	 * @return
+	 * Gives the obstacle distance from the gripper sensor. Max distance (i.e., no obstacle detected) is 1500
+	 * @return a value between 0 and 1500
 	 */
 	public double getObjectDistanceToGripper() { return gripperSensor.getValue();}
 
@@ -380,7 +375,27 @@ public class PolyCreateControler extends Supervisor {
 
 	public boolean isThereVirtualwall() { return (receiver.getQueueLength() > 1);}
 	
+	public boolean closeToObject(CameraRecognitionObject[] ojs) {
+		double xObj = ((double)Math.round(ojs[0].getPosition()[1]*1000))/10;
+		double yObj = Math.round(ojs[0].getPosition()[0]*180/Math.PI) ;
+		double xRob = Math.round(this.getSelf().getPosition()[0]);
+		double yRob = Math.round(this.getSelf().getPosition()[2]);
+		double a = yObj-yRob;
+		double b = xObj-xRob;
+		double c = Math.sqrt((a*a)+(b*b));
+		//System.out.println(c+"close object");
+		if(c < 3 && this.facingTheObject)
+			return true;
+		return false;
+	}
 	
+	public boolean gripperCloseToObject(CameraRecognitionObject[] ojsb) {
+		double c = this.getObjectDistanceToGripper();
+		//System.out.println(c + "close gripper");
+		if(c < 145)
+			return true;
+		return false;
+	}
 
 	
 	///////other methods///////
@@ -434,9 +449,7 @@ public class PolyCreateControler extends Supervisor {
 					e.printStackTrace();
 				}
 		}
-
 	}
-
 
 	@Override
 	protected void finalize() {

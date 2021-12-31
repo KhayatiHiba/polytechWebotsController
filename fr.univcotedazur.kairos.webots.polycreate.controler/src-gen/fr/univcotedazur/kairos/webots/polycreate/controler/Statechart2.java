@@ -19,21 +19,17 @@ public class Statechart2 implements IStatemachine, ITimed {
 		MOVE_ROBOT_IS_RUNNING_RÉGION__GAP_DOWN,
 		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT,
 		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GRIP,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_TURNROUND,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_FACEOBJECT,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GETCLOSER,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_SAVEPOSITION_SAVEPOSITION,
+		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION,
 		MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK,
+		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL,
+		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP,
+		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK,
 		PASSIVE_WAIT_WAIT,
 		CHECK_CHECK,
 		$NULLSTATE$
 	};
 	
-	private final State[] stateVector = new State[4];
+	private final State[] stateVector = new State[3];
 	
 	private ITimerService timerService;
 	
@@ -67,7 +63,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		}
 	}
 	public Statechart2() {
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 3; i++) {
 			stateVector[i] = State.$NULLSTATE$;
 		}
 		
@@ -110,7 +106,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	 * @see IStatemachine#isActive()
 	 */
 	public synchronized boolean isActive() {
-		return stateVector[0] != State.$NULLSTATE$||stateVector[1] != State.$NULLSTATE$||stateVector[2] != State.$NULLSTATE$||stateVector[3] != State.$NULLSTATE$;
+		return stateVector[0] != State.$NULLSTATE$||stateVector[1] != State.$NULLSTATE$||stateVector[2] != State.$NULLSTATE$;
 	}
 	
 	/** 
@@ -126,16 +122,18 @@ public class Statechart2 implements IStatemachine, ITimed {
 		thereIsNoObstacle = false;
 		thereIsAFrontObstacle = false;
 		thereIsAVirtualWall = false;
-		thereIsAnObject = false;
+		thereIsAnObjectFront = false;
 		thereIsNoVirtualWall = false;
 		thereIsAGapDown = false;
 		thereIsNoObstacleFront = false;
 		thereIsnoGap = false;
-		readyToGrip = false;
-		gripObject = false;
+		thereIsAnObject = false;
+		theGripIsClose = false;
 		theGripIsNotClose = false;
 		theObjectIsGrip = false;
 		objectGrip = false;
+		readyToGrip = false;
+		gripObject = false;
 		robotIsBlocked = false;
 		isFacingTheObject = false;
 		timeEvents[0] = false;
@@ -160,26 +158,20 @@ public class Statechart2 implements IStatemachine, ITimed {
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__GAP_DOWN:
 			transitioned = move_robot_is_running_R_gion__gap_down_react(transitioned);
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GRIP:
-			transitioned = move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_grip_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP:
+			transitioned = move_robot_is_running_R_gion__robots_and_object_r1_grip_react(transitioned);
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_TURNROUND:
-			transitioned = move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_turnRound_react(transitioned);
-			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_FACEOBJECT:
-			transitioned = move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_faceobject_react(transitioned);
-			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GETCLOSER:
-			transitioned = move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_getCloser_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION:
+			transitioned = move_robot_is_running_R_gion__robots_and_object_r1_gripPosition_react(transitioned);
 			break;
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE:
 			transitioned = move_robot_is_running_R_gion__blocage_react(transitioned);
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
-			transitioned = move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
+			transitioned = move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_react(transitioned);
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
-			transitioned = move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
+			transitioned = move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_react(transitioned);
 			break;
 		default:
 			break;
@@ -187,15 +179,6 @@ public class Statechart2 implements IStatemachine, ITimed {
 		
 		if (getStateConfVectorPosition()<1) {
 			switch (stateVector[1]) {
-			case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_SAVEPOSITION_SAVEPOSITION:
-				transitioned = move_robot_is_running_R_gion__robots_and_object_savePosition_savePosition_react(transitioned);
-				break;
-			default:
-				break;
-			}
-		}
-		if (getStateConfVectorPosition()<2) {
-			switch (stateVector[2]) {
 			case PASSIVE_WAIT_WAIT:
 				transitioned = passive_wait_wait_react(transitioned);
 				break;
@@ -203,8 +186,8 @@ public class Statechart2 implements IStatemachine, ITimed {
 				break;
 			}
 		}
-		if (getStateConfVectorPosition()<3) {
-			switch (stateVector[3]) {
+		if (getStateConfVectorPosition()<2) {
+			switch (stateVector[2]) {
 			case CHECK_CHECK:
 				transitioned = check_check_react(transitioned);
 				break;
@@ -232,7 +215,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 			clearInEvents();
 			
 			nextEvent();
-		} while ((((((((((((((((((thereIsAnObstacle || thereIsNoObstacle) || thereIsAFrontObstacle) || thereIsAVirtualWall) || thereIsAnObject) || thereIsNoVirtualWall) || thereIsAGapDown) || thereIsNoObstacleFront) || thereIsnoGap) || readyToGrip) || gripObject) || theGripIsNotClose) || theObjectIsGrip) || objectGrip) || robotIsBlocked) || isFacingTheObject) || timeEvents[0]) || timeEvents[1]));
+		} while ((((((((((((((((((((thereIsAnObstacle || thereIsNoObstacle) || thereIsAFrontObstacle) || thereIsAVirtualWall) || thereIsAnObjectFront) || thereIsNoVirtualWall) || thereIsAGapDown) || thereIsNoObstacleFront) || thereIsnoGap) || thereIsAnObject) || theGripIsClose) || theGripIsNotClose) || theObjectIsGrip) || objectGrip) || readyToGrip) || gripObject) || robotIsBlocked) || isFacingTheObject) || timeEvents[0]) || timeEvents[1]));
 		
 		isExecuting = false;
 	}
@@ -251,7 +234,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		switch (state) {
 		case MOVE_ROBOT_IS_RUNNING:
 			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK.ordinal();
+					MOVE_ROBOT_IS_RUNNING.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK.ordinal();
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE:
 			return stateVector[0].ordinal() >= State.
 					MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEFRONT.ordinal();
@@ -268,33 +251,24 @@ public class Statechart2 implements IStatemachine, ITimed {
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__GAP_DOWN;
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT:
 			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_SAVEPOSITION_SAVEPOSITION.ordinal();
+					MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION.ordinal();
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP:
-			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GETCLOSER.ordinal();
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GRIP:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GRIP;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_TURNROUND:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_TURNROUND;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_FACEOBJECT:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_FACEOBJECT;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GETCLOSER:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GETCLOSER;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_SAVEPOSITION_SAVEPOSITION:
-			return stateVector[1] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_SAVEPOSITION_SAVEPOSITION;
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP;
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION;
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE:
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL:
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL:
 			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK.ordinal();
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
+					MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK.ordinal();
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP;
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
 		case PASSIVE_WAIT_WAIT:
-			return stateVector[2] == State.PASSIVE_WAIT_WAIT;
+			return stateVector[1] == State.PASSIVE_WAIT_WAIT;
 		case CHECK_CHECK:
-			return stateVector[3] == State.CHECK_CHECK;
+			return stateVector[2] == State.CHECK_CHECK;
 		default:
 			return false;
 		}
@@ -364,13 +338,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 		}
 	}
 	
-	private boolean thereIsAnObject;
+	private boolean thereIsAnObjectFront;
 	
 	
-	public void raiseThereIsAnObject() {
+	public void raiseThereIsAnObjectFront() {
 		synchronized(Statechart2.this) {
 			inEventQueue.add(() -> {
-				thereIsAnObject = true;
+				thereIsAnObjectFront = true;
 			});
 			runCycle();
 		}
@@ -424,25 +398,25 @@ public class Statechart2 implements IStatemachine, ITimed {
 		}
 	}
 	
-	private boolean readyToGrip;
+	private boolean thereIsAnObject;
 	
 	
-	public void raiseReadyToGrip() {
+	public void raiseThereIsAnObject() {
 		synchronized(Statechart2.this) {
 			inEventQueue.add(() -> {
-				readyToGrip = true;
+				thereIsAnObject = true;
 			});
 			runCycle();
 		}
 	}
 	
-	private boolean gripObject;
+	private boolean theGripIsClose;
 	
 	
-	public void raiseGripObject() {
+	public void raiseTheGripIsClose() {
 		synchronized(Statechart2.this) {
 			inEventQueue.add(() -> {
-				gripObject = true;
+				theGripIsClose = true;
 			});
 			runCycle();
 		}
@@ -479,6 +453,30 @@ public class Statechart2 implements IStatemachine, ITimed {
 		synchronized(Statechart2.this) {
 			inEventQueue.add(() -> {
 				objectGrip = true;
+			});
+			runCycle();
+		}
+	}
+	
+	private boolean readyToGrip;
+	
+	
+	public void raiseReadyToGrip() {
+		synchronized(Statechart2.this) {
+			inEventQueue.add(() -> {
+				readyToGrip = true;
+			});
+			runCycle();
+		}
+	}
+	
+	private boolean gripObject;
+	
+	
+	public void raiseGripObject() {
+		synchronized(Statechart2.this) {
+			inEventQueue.add(() -> {
+				gripObject = true;
 			});
 			runCycle();
 		}
@@ -522,6 +520,22 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	public Observable<Void> getTurn() {
 		return turnObservable;
+	}
+	
+	private boolean situateSelf;
+	
+	
+	protected void raiseSituateSelf() {
+		synchronized(Statechart2.this) {
+			situateSelf = true;
+			situateSelfObservable.next(null);
+		}
+	}
+	
+	private Observable<Void> situateSelfObservable = new Observable<Void>();
+	
+	public Observable<Void> getSituateSelf() {
+		return situateSelfObservable;
 	}
 	
 	private boolean moveFront;
@@ -602,22 +616,6 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	public Observable<Void> getStop() {
 		return stopObservable;
-	}
-	
-	private boolean situateSelf;
-	
-	
-	protected void raiseSituateSelf() {
-		synchronized(Statechart2.this) {
-			situateSelf = true;
-			situateSelfObservable.next(null);
-		}
-	}
-	
-	private Observable<Void> situateSelfObservable = new Observable<Void>();
-	
-	public Observable<Void> getSituateSelf() {
-		return situateSelfObservable;
 	}
 	
 	private boolean turnRound;
@@ -716,20 +714,20 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return deblockObservable;
 	}
 	
-	private boolean faceObject;
+	private boolean gripPosition;
 	
 	
-	protected void raiseFaceObject() {
+	protected void raiseGripPosition() {
 		synchronized(Statechart2.this) {
-			faceObject = true;
-			faceObjectObservable.next(null);
+			gripPosition = true;
+			gripPositionObservable.next(null);
 		}
 	}
 	
-	private Observable<Void> faceObjectObservable = new Observable<Void>();
+	private Observable<Void> gripPositionObservable = new Observable<Void>();
 	
-	public Observable<Void> getFaceObject() {
-		return faceObjectObservable;
+	public Observable<Void> getGripPosition() {
+		return gripPositionObservable;
 	}
 	
 	/* Entry action for state 'turning'. */
@@ -753,27 +751,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 	}
 	
 	/* Entry action for state 'grip'. */
-	private void entryAction_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_grip() {
-		raiseGrip();
-		
+	private void entryAction_move_robot_is_running_R_gion__robots_and_object_r1_grip() {
 		raiseGrip();
 	}
 	
-	/* Entry action for state 'turnRound'. */
-	private void entryAction_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_turnRound() {
-		raiseFullTurn();
-	}
-	
-	/* Entry action for state 'faceobject'. */
-	private void entryAction_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_faceobject() {
-		raiseFaceObject();
-		
-		raiseFaceObject();
-	}
-	
-	/* Entry action for state 'getCloser'. */
-	private void entryAction_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_getCloser() {
-		raiseSituateSelf();
+	/* Entry action for state 'gripPosition'. */
+	private void entryAction_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition() {
+		raiseGripPosition();
 	}
 	
 	/* Entry action for state 'blocage'. */
@@ -782,12 +766,12 @@ public class Statechart2 implements IStatemachine, ITimed {
 	}
 	
 	/* Entry action for state 'virtual stop'. */
-	private void entryAction_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop() {
+	private void entryAction_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop() {
 		raiseFullTurn();
 	}
 	
 	/* Entry action for state 'virtual block'. */
-	private void entryAction_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block() {
+	private void entryAction_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block() {
 		raiseTurnRound();
 	}
 	
@@ -856,41 +840,16 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* 'default' enter sequence for state grip */
 	private void enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_default() {
-		enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_default();
-	}
-	
-	/* 'default' enter sequence for state grip */
-	private void enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_grip_default() {
-		entryAction_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_grip();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GRIP;
+		entryAction_move_robot_is_running_R_gion__robots_and_object_r1_grip();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP;
 		stateConfVectorPosition = 0;
 	}
 	
-	/* 'default' enter sequence for state turnRound */
-	private void enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_turnRound_default() {
-		entryAction_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_turnRound();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_TURNROUND;
+	/* 'default' enter sequence for state gripPosition */
+	private void enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition_default() {
+		entryAction_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION;
 		stateConfVectorPosition = 0;
-	}
-	
-	/* 'default' enter sequence for state faceobject */
-	private void enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_faceobject_default() {
-		entryAction_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_faceobject();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_FACEOBJECT;
-		stateConfVectorPosition = 0;
-	}
-	
-	/* 'default' enter sequence for state getCloser */
-	private void enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_getCloser_default() {
-		entryAction_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_getCloser();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GETCLOSER;
-		stateConfVectorPosition = 0;
-	}
-	
-	/* 'default' enter sequence for state savePosition */
-	private void enterSequence_move_robot_is_running_R_gion__robots_and_object_savePosition_savePosition_default() {
-		stateVector[1] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_SAVEPOSITION_SAVEPOSITION;
-		stateConfVectorPosition = 1;
 	}
 	
 	/* 'default' enter sequence for state blocage */
@@ -900,37 +859,37 @@ public class Statechart2 implements IStatemachine, ITimed {
 		stateConfVectorPosition = 0;
 	}
 	
-	/* 'default' enter sequence for state virtualWall */
-	private void enterSequence_move_robot_is_running_R_gion__virtualWall_default() {
-		enterSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_default();
+	/* 'default' enter sequence for state robot and virtualWall */
+	private void enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_default() {
+		enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_default();
 	}
 	
 	/* 'default' enter sequence for state virtual stop */
-	private void enterSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default() {
-		entryAction_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP;
+	private void enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default() {
+		entryAction_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* 'default' enter sequence for state virtual block */
-	private void enterSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block_default() {
-		entryAction_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
+	private void enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_default() {
+		entryAction_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* 'default' enter sequence for state wait */
 	private void enterSequence_passive_wait_wait_default() {
 		entryAction_passive_wait_wait();
-		stateVector[2] = State.PASSIVE_WAIT_WAIT;
-		stateConfVectorPosition = 2;
+		stateVector[1] = State.PASSIVE_WAIT_WAIT;
+		stateConfVectorPosition = 1;
 	}
 	
 	/* 'default' enter sequence for state check */
 	private void enterSequence_check_check_default() {
 		entryAction_check_check();
-		stateVector[3] = State.CHECK_CHECK;
-		stateConfVectorPosition = 3;
+		stateVector[2] = State.CHECK_CHECK;
+		stateConfVectorPosition = 2;
 	}
 	
 	/* 'default' enter sequence for region move */
@@ -953,19 +912,9 @@ public class Statechart2 implements IStatemachine, ITimed {
 		react_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1__entry_Default();
 	}
 	
-	/* 'default' enter sequence for region r1 */
-	private void enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_default() {
-		react_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1__entry_Default();
-	}
-	
-	/* 'default' enter sequence for region savePosition */
-	private void enterSequence_move_robot_is_running_R_gion__robots_and_object_savePosition_default() {
-		react_move_robot_is_running_R_gion__robots_and_object_savePosition__entry_Default();
-	}
-	
 	/* 'default' enter sequence for region do not cross a virtual wall */
-	private void enterSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_default() {
-		react_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall__entry_Default();
+	private void enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_default() {
+		react_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall__entry_Default();
 	}
 	
 	/* 'default' enter sequence for region passive_wait */
@@ -1012,40 +961,16 @@ public class Statechart2 implements IStatemachine, ITimed {
 		stateConfVectorPosition = 0;
 	}
 	
-	/* Default exit sequence for state robots and object */
-	private void exitSequence_move_robot_is_running_R_gion__robots_and_object() {
-		exitSequence_move_robot_is_running_R_gion__robots_and_object_r1();
-		exitSequence_move_robot_is_running_R_gion__robots_and_object_savePosition();
-	}
-	
 	/* Default exit sequence for state grip */
-	private void exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_grip() {
+	private void exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
 	
-	/* Default exit sequence for state turnRound */
-	private void exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_turnRound() {
+	/* Default exit sequence for state gripPosition */
+	private void exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
-	}
-	
-	/* Default exit sequence for state faceobject */
-	private void exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_faceobject() {
-		stateVector[0] = State.$NULLSTATE$;
-		stateConfVectorPosition = 0;
-	}
-	
-	/* Default exit sequence for state getCloser */
-	private void exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_getCloser() {
-		stateVector[0] = State.$NULLSTATE$;
-		stateConfVectorPosition = 0;
-	}
-	
-	/* Default exit sequence for state savePosition */
-	private void exitSequence_move_robot_is_running_R_gion__robots_and_object_savePosition_savePosition() {
-		stateVector[1] = State.$NULLSTATE$;
-		stateConfVectorPosition = 1;
 	}
 	
 	/* Default exit sequence for state blocage */
@@ -1054,35 +979,35 @@ public class Statechart2 implements IStatemachine, ITimed {
 		stateConfVectorPosition = 0;
 	}
 	
-	/* Default exit sequence for state virtualWall */
-	private void exitSequence_move_robot_is_running_R_gion__virtualWall() {
-		exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall();
+	/* Default exit sequence for state robot and virtualWall */
+	private void exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall() {
+		exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall();
 	}
 	
 	/* Default exit sequence for state virtual stop */
-	private void exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop() {
+	private void exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* Default exit sequence for state virtual block */
-	private void exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block() {
+	private void exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* Default exit sequence for state wait */
 	private void exitSequence_passive_wait_wait() {
-		stateVector[2] = State.$NULLSTATE$;
-		stateConfVectorPosition = 2;
+		stateVector[1] = State.$NULLSTATE$;
+		stateConfVectorPosition = 1;
 		
 		exitAction_passive_wait_wait();
 	}
 	
 	/* Default exit sequence for state check */
 	private void exitSequence_check_check() {
-		stateVector[3] = State.$NULLSTATE$;
-		stateConfVectorPosition = 3;
+		stateVector[2] = State.$NULLSTATE$;
+		stateConfVectorPosition = 2;
 		
 		exitAction_check_check();
 	}
@@ -1102,34 +1027,20 @@ public class Statechart2 implements IStatemachine, ITimed {
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__GAP_DOWN:
 			exitSequence_move_robot_is_running_R_gion__gap_down();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GRIP:
-			exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_grip();
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP:
+			exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_TURNROUND:
-			exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_turnRound();
-			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_FACEOBJECT:
-			exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_faceobject();
-			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GETCLOSER:
-			exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_getCloser();
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION:
+			exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition();
 			break;
 		case MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE:
 			exitSequence_move_robot_is_running_R_gion__blocage();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
-			exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
+			exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
-			exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block();
-			break;
-		default:
-			break;
-		}
-		
-		switch (stateVector[1]) {
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_SAVEPOSITION_SAVEPOSITION:
-			exitSequence_move_robot_is_running_R_gion__robots_and_object_savePosition_savePosition();
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
+			exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
 			break;
 		default:
 			break;
@@ -1167,45 +1078,14 @@ public class Statechart2 implements IStatemachine, ITimed {
 		}
 	}
 	
-	/* Default exit sequence for region r1 */
-	private void exitSequence_move_robot_is_running_R_gion__robots_and_object_r1() {
-		switch (stateVector[0]) {
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GRIP:
-			exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_grip();
-			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_TURNROUND:
-			exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_turnRound();
-			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_FACEOBJECT:
-			exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_faceobject();
-			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP_R1_GETCLOSER:
-			exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_getCloser();
-			break;
-		default:
-			break;
-		}
-	}
-	
-	/* Default exit sequence for region savePosition */
-	private void exitSequence_move_robot_is_running_R_gion__robots_and_object_savePosition() {
-		switch (stateVector[1]) {
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_SAVEPOSITION_SAVEPOSITION:
-			exitSequence_move_robot_is_running_R_gion__robots_and_object_savePosition_savePosition();
-			break;
-		default:
-			break;
-		}
-	}
-	
 	/* Default exit sequence for region do not cross a virtual wall */
-	private void exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall() {
+	private void exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall() {
 		switch (stateVector[0]) {
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
-			exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
+			exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
-			exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block();
+		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
+			exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
 			break;
 		default:
 			break;
@@ -1214,7 +1094,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Default exit sequence for region passive_wait */
 	private void exitSequence_passive_wait() {
-		switch (stateVector[2]) {
+		switch (stateVector[1]) {
 		case PASSIVE_WAIT_WAIT:
 			exitSequence_passive_wait_wait();
 			break;
@@ -1225,7 +1105,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Default exit sequence for region check */
 	private void exitSequence_check() {
-		switch (stateVector[3]) {
+		switch (stateVector[2]) {
 		case CHECK_CHECK:
 			exitSequence_check_check();
 			break;
@@ -1255,18 +1135,8 @@ public class Statechart2 implements IStatemachine, ITimed {
 	}
 	
 	/* Default react sequence for initial entry  */
-	private void react_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1__entry_Default() {
-		enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_faceobject_default();
-	}
-	
-	/* Default react sequence for initial entry  */
-	private void react_move_robot_is_running_R_gion__robots_and_object_savePosition__entry_Default() {
-		enterSequence_move_robot_is_running_R_gion__robots_and_object_savePosition_savePosition_default();
-	}
-	
-	/* Default react sequence for initial entry  */
-	private void react_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall__entry_Default() {
-		enterSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default();
+	private void react_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall__entry_Default() {
+		enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default();
 	}
 	
 	/* Default react sequence for initial entry  */
@@ -1357,17 +1227,16 @@ public class Statechart2 implements IStatemachine, ITimed {
 					
 					transitioned_after = 0;
 				} else {
-					if (thereIsAnObject) {
+					if (thereIsAVirtualWall) {
 						exitSequence_move_robot_is_running_R_gion__robot_and_obstacle();
-						enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_default();
-						enterSequence_move_robot_is_running_R_gion__robots_and_object_savePosition_default();
+						enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_default();
 						move_robot_is_running_react(0);
 						
 						transitioned_after = 0;
 					} else {
-						if (thereIsAVirtualWall) {
+						if (thereIsAnObject) {
 							exitSequence_move_robot_is_running_R_gion__robot_and_obstacle();
-							enterSequence_move_robot_is_running_R_gion__virtualWall_default();
+							enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition_default();
 							move_robot_is_running_react(0);
 							
 							transitioned_after = 0;
@@ -1464,96 +1333,28 @@ public class Statechart2 implements IStatemachine, ITimed {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
-			if (thereIsAnObstacle) {
-				exitSequence_move_robot_is_running_R_gion__robots_and_object();
-				enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveBack_default();
-				move_robot_is_running_react(0);
-				
-				transitioned_after = 0;
-			}
-		}
-		return transitioned_after;
-	}
-	
-	private long move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_grip_react(long transitioned_before) {
-		long transitioned_after = transitioned_before;
-		
-		if (transitioned_after<0) {
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__robots_and_object_r1_grip_react(transitioned_before);
+			transitioned_after = move_robot_is_running_R_gion__robots_and_object_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_turnRound_react(long transitioned_before) {
+	private long move_robot_is_running_R_gion__robots_and_object_r1_gripPosition_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (readyToGrip) {
-				exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_turnRound();
-				enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_getCloser_default();
-				move_robot_is_running_R_gion__robots_and_object_r1_grip_react(0);
+				exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition();
+				enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_default();
+				move_robot_is_running_R_gion__robots_and_object_react(0);
 				
 				transitioned_after = 0;
 			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__robots_and_object_r1_grip_react(transitioned_before);
-		}
-		return transitioned_after;
-	}
-	
-	private long move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_faceobject_react(long transitioned_before) {
-		long transitioned_after = transitioned_before;
-		
-		if (transitioned_after<0) {
-			if (isFacingTheObject) {
-				exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_faceobject();
-				enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_turnRound_default();
-				move_robot_is_running_R_gion__robots_and_object_r1_grip_react(0);
-				
-				transitioned_after = 0;
-			}
-		}
-		/* If no transition was taken then execute local reactions */
-		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__robots_and_object_r1_grip_react(transitioned_before);
-		}
-		return transitioned_after;
-	}
-	
-	private long move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_getCloser_react(long transitioned_before) {
-		long transitioned_after = transitioned_before;
-		
-		if (transitioned_after<0) {
-			if (gripObject) {
-				exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_getCloser();
-				enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_r1_grip_default();
-				move_robot_is_running_R_gion__robots_and_object_r1_grip_react(0);
-				
-				transitioned_after = 0;
-			}
-		}
-		/* If no transition was taken then execute local reactions */
-		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__robots_and_object_r1_grip_react(transitioned_before);
-		}
-		return transitioned_after;
-	}
-	
-	private long move_robot_is_running_R_gion__robots_and_object_savePosition_savePosition_react(long transitioned_before) {
-		long transitioned_after = transitioned_before;
-		
-		if (transitioned_after<1) {
-		}
-		/* If no transition was taken then execute local reactions */
-		if (transitioned_after==transitioned_before) {
-			if (gripObject) {
-				raiseSaveRobotPosition();
-			}
 			transitioned_after = move_robot_is_running_R_gion__robots_and_object_react(transitioned_before);
 		}
 		return transitioned_after;
@@ -1578,12 +1379,12 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__virtualWall_react(long transitioned_before) {
+	private long move_robot_is_running_R_gion__robot_and_virtualWall_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (thereIsNoVirtualWall) {
-				exitSequence_move_robot_is_running_R_gion__virtualWall();
+				exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall();
 				enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_default();
 				move_robot_is_running_react(0);
 				
@@ -1597,40 +1398,40 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop_react(long transitioned_before) {
+	private long move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (thereIsAVirtualWall) {
-				exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
-				enterSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block_default();
-				move_robot_is_running_R_gion__virtualWall_react(0);
+				exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
+				enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_default();
+				move_robot_is_running_R_gion__robot_and_virtualWall_react(0);
 				
 				transitioned_after = 0;
 			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__virtualWall_react(transitioned_before);
+			transitioned_after = move_robot_is_running_R_gion__robot_and_virtualWall_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block_react(long transitioned_before) {
+	private long move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (thereIsAVirtualWall) {
-				exitSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_block();
-				enterSequence_move_robot_is_running_R_gion__virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default();
-				move_robot_is_running_R_gion__virtualWall_react(0);
+				exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
+				enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default();
+				move_robot_is_running_R_gion__robot_and_virtualWall_react(0);
 				
 				transitioned_after = 0;
 			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__virtualWall_react(transitioned_before);
+			transitioned_after = move_robot_is_running_R_gion__robot_and_virtualWall_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
@@ -1638,7 +1439,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	private long passive_wait_wait_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
-		if (transitioned_after<2) {
+		if (transitioned_after<1) {
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
@@ -1652,7 +1453,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	private long check_check_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
-		if (transitioned_after<3) {
+		if (transitioned_after<2) {
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {

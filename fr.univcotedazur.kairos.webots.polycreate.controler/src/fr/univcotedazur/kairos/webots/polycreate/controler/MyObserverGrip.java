@@ -13,7 +13,7 @@ public class MyObserverGrip implements Observer {
 
 			@Override
 			public void next(Object value) {
-				System.out.println("Gripping object");
+				System.out.println("Gripping the object\n");
 				theController.grip();
 				
 			}
