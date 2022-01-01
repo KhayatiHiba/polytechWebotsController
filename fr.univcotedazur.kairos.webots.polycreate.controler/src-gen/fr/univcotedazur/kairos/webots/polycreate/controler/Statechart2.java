@@ -11,19 +11,19 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Statechart2 implements IStatemachine, ITimed {
 	public enum State {
 		MOVE_ROBOT_IS_RUNNING,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_TURNING,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEBACK,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEFRONT,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__GAP_DOWN,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP,
-		MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_TURNING,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEBACK,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEFRONT,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_GAP_DOWN,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIP,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK,
 		PASSIVE_WAIT_WAIT,
 		CHECK_CHECK,
 		$NULLSTATE$
@@ -146,32 +146,32 @@ public class Statechart2 implements IStatemachine, ITimed {
 		stateConfVectorPosition = 0;
 		
 		switch (stateVector[0]) {
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_TURNING:
-			transitioned = move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_TURNING:
+			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning_react(transitioned);
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEBACK:
-			transitioned = move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveBack_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEBACK:
+			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveBack_react(transitioned);
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEFRONT:
-			transitioned = move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveFront_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEFRONT:
+			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveFront_react(transitioned);
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__GAP_DOWN:
-			transitioned = move_robot_is_running_R_gion__gap_down_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_GAP_DOWN:
+			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_gap_down_react(transitioned);
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP:
-			transitioned = move_robot_is_running_R_gion__robots_and_object_r1_grip_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIP:
+			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_grip_react(transitioned);
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION:
-			transitioned = move_robot_is_running_R_gion__robots_and_object_r1_gripPosition_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION:
+			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition_react(transitioned);
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE:
-			transitioned = move_robot_is_running_R_gion__blocage_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE:
+			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_blocage_react(transitioned);
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
-			transitioned = move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
+			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_react(transitioned);
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
-			transitioned = move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_react(transitioned);
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
+			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_react(transitioned);
 			break;
 		default:
 			break;
@@ -234,37 +234,37 @@ public class Statechart2 implements IStatemachine, ITimed {
 		switch (state) {
 		case MOVE_ROBOT_IS_RUNNING:
 			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK.ordinal();
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE:
+					MOVE_ROBOT_IS_RUNNING.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK.ordinal();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE:
 			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEFRONT.ordinal();
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_TURNING:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_TURNING;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES:
+					MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEFRONT.ordinal();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_TURNING:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_TURNING;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES:
 			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEFRONT.ordinal();
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEBACK:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEBACK;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEFRONT:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEFRONT;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__GAP_DOWN:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__GAP_DOWN;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT:
+					MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEFRONT.ordinal();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEBACK:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEBACK;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEFRONT:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEFRONT;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_GAP_DOWN:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_GAP_DOWN;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT:
 			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION.ordinal();
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL:
+					MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION.ordinal();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIP:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIP;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL:
 			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK.ordinal();
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
-			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
+					MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK.ordinal();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
 		case PASSIVE_WAIT_WAIT:
 			return stateVector[1] == State.PASSIVE_WAIT_WAIT;
 		case CHECK_CHECK:
@@ -731,47 +731,47 @@ public class Statechart2 implements IStatemachine, ITimed {
 	}
 	
 	/* Entry action for state 'turning'. */
-	private void entryAction_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning() {
+	private void entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning() {
 		raiseTurn();
 	}
 	
 	/* Entry action for state 'moveBack'. */
-	private void entryAction_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveBack() {
+	private void entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveBack() {
 		raiseMoveBack();
 	}
 	
 	/* Entry action for state 'moveFront'. */
-	private void entryAction_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveFront() {
+	private void entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveFront() {
 		raiseMoveFront();
 	}
 	
 	/* Entry action for state 'gap down'. */
-	private void entryAction_move_robot_is_running_R_gion__gap_down() {
+	private void entryAction_move_robot_is_running_robot_is_in_cleaning_mode_gap_down() {
 		raiseMoveBack();
 	}
 	
 	/* Entry action for state 'grip'. */
-	private void entryAction_move_robot_is_running_R_gion__robots_and_object_r1_grip() {
+	private void entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_grip() {
 		raiseGrip();
 	}
 	
 	/* Entry action for state 'gripPosition'. */
-	private void entryAction_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition() {
+	private void entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition() {
 		raiseGripPosition();
 	}
 	
 	/* Entry action for state 'blocage'. */
-	private void entryAction_move_robot_is_running_R_gion__blocage() {
+	private void entryAction_move_robot_is_running_robot_is_in_cleaning_mode_blocage() {
 		raiseDeblock();
 	}
 	
 	/* Entry action for state 'virtual stop'. */
-	private void entryAction_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop() {
+	private void entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop() {
 		raiseFullTurn();
 	}
 	
 	/* Entry action for state 'virtual block'. */
-	private void entryAction_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block() {
+	private void entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block() {
 		raiseTurnRound();
 	}
 	
@@ -797,84 +797,84 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* 'default' enter sequence for state robot is running */
 	private void enterSequence_move_robot_is_running_default() {
-		enterSequence_move_robot_is_running_R_gion__default();
+		enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_default();
 	}
 	
 	/* 'default' enter sequence for state robot and obstacle */
-	private void enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_default() {
-		enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_default();
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_default() {
+		enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_default();
 	}
 	
 	/* 'default' enter sequence for state turning */
-	private void enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning_default() {
-		entryAction_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_TURNING;
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning_default() {
+		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_TURNING;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* 'default' enter sequence for state moves */
-	private void enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_default() {
-		enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_default();
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_default() {
+		enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_default();
 	}
 	
 	/* 'default' enter sequence for state moveBack */
-	private void enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveBack_default() {
-		entryAction_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveBack();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEBACK;
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveBack_default() {
+		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveBack();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEBACK;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* 'default' enter sequence for state moveFront */
-	private void enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveFront_default() {
-		entryAction_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveFront();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEFRONT;
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveFront_default() {
+		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveFront();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEFRONT;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* 'default' enter sequence for state gap down */
-	private void enterSequence_move_robot_is_running_R_gion__gap_down_default() {
-		entryAction_move_robot_is_running_R_gion__gap_down();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__GAP_DOWN;
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_gap_down_default() {
+		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_gap_down();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_GAP_DOWN;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* 'default' enter sequence for state grip */
-	private void enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_default() {
-		entryAction_move_robot_is_running_R_gion__robots_and_object_r1_grip();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP;
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_grip_default() {
+		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_grip();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIP;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* 'default' enter sequence for state gripPosition */
-	private void enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition_default() {
-		entryAction_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION;
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition_default() {
+		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* 'default' enter sequence for state blocage */
-	private void enterSequence_move_robot_is_running_R_gion__blocage_default() {
-		entryAction_move_robot_is_running_R_gion__blocage();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE;
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_blocage_default() {
+		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_blocage();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* 'default' enter sequence for state robot and virtualWall */
-	private void enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_default() {
-		enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_default();
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_default() {
+		enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_default();
 	}
 	
 	/* 'default' enter sequence for state virtual stop */
-	private void enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default() {
-		entryAction_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP;
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default() {
+		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* 'default' enter sequence for state virtual block */
-	private void enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_default() {
-		entryAction_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
-		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_default() {
+		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
 		stateConfVectorPosition = 0;
 	}
 	
@@ -897,24 +897,24 @@ public class Statechart2 implements IStatemachine, ITimed {
 		react_move__entry_Default();
 	}
 	
-	/* 'default' enter sequence for region Région  */
-	private void enterSequence_move_robot_is_running_R_gion__default() {
-		react_move_robot_is_running_R_gion___entry_Default();
+	/* 'default' enter sequence for region robot is in cleaning mode */
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_default() {
+		react_move_robot_is_running_robot_is_in_cleaning_mode__entry_Default();
 	}
 	
-	/* 'default' enter sequence for region dodgeObstacle */
-	private void enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_default() {
-		react_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle__entry_Default();
+	/* 'default' enter sequence for region dodging obstacles */
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_default() {
+		react_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles__entry_Default();
 	}
 	
-	/* 'default' enter sequence for region r1 */
-	private void enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_default() {
-		react_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1__entry_Default();
+	/* 'default' enter sequence for region simple robot movement */
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_default() {
+		react_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement__entry_Default();
 	}
 	
 	/* 'default' enter sequence for region do not cross a virtual wall */
-	private void enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_default() {
-		react_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall__entry_Default();
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_default() {
+		react_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall__entry_Default();
 	}
 	
 	/* 'default' enter sequence for region passive_wait */
@@ -928,70 +928,70 @@ public class Statechart2 implements IStatemachine, ITimed {
 	}
 	
 	/* Default exit sequence for state robot and obstacle */
-	private void exitSequence_move_robot_is_running_R_gion__robot_and_obstacle() {
-		exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle();
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle() {
+		exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles();
 	}
 	
 	/* Default exit sequence for state turning */
-	private void exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning() {
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* Default exit sequence for state moves */
-	private void exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves() {
-		exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1();
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves() {
+		exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement();
 	}
 	
 	/* Default exit sequence for state moveBack */
-	private void exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveBack() {
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveBack() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* Default exit sequence for state moveFront */
-	private void exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveFront() {
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveFront() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* Default exit sequence for state gap down */
-	private void exitSequence_move_robot_is_running_R_gion__gap_down() {
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_gap_down() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* Default exit sequence for state grip */
-	private void exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip() {
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_grip() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* Default exit sequence for state gripPosition */
-	private void exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition() {
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* Default exit sequence for state blocage */
-	private void exitSequence_move_robot_is_running_R_gion__blocage() {
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_blocage() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* Default exit sequence for state robot and virtualWall */
-	private void exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall() {
-		exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall();
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall() {
+		exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall();
 	}
 	
 	/* Default exit sequence for state virtual stop */
-	private void exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop() {
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
 	
 	/* Default exit sequence for state virtual block */
-	private void exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block() {
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
@@ -1015,63 +1015,63 @@ public class Statechart2 implements IStatemachine, ITimed {
 	/* Default exit sequence for region move */
 	private void exitSequence_move() {
 		switch (stateVector[0]) {
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_TURNING:
-			exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_TURNING:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEBACK:
-			exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveBack();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEBACK:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveBack();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEFRONT:
-			exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveFront();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEFRONT:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveFront();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__GAP_DOWN:
-			exitSequence_move_robot_is_running_R_gion__gap_down();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_GAP_DOWN:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_gap_down();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIP:
-			exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIP:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_grip();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOTS_AND_OBJECT_R1_GRIPPOSITION:
-			exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__BLOCAGE:
-			exitSequence_move_robot_is_running_R_gion__blocage();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_blocage();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
-			exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
-			exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
-			break;
-		default:
-			break;
-		}
-	}
-	
-	/* Default exit sequence for region dodgeObstacle */
-	private void exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle() {
-		switch (stateVector[0]) {
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_TURNING:
-			exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning();
-			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEBACK:
-			exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveBack();
-			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEFRONT:
-			exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveFront();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
 			break;
 		default:
 			break;
 		}
 	}
 	
-	/* Default exit sequence for region r1 */
-	private void exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1() {
+	/* Default exit sequence for region dodging obstacles */
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles() {
 		switch (stateVector[0]) {
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEBACK:
-			exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveBack();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_TURNING:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_OBSTACLE_DODGEOBSTACLE_MOVES_R1_MOVEFRONT:
-			exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveFront();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEBACK:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveBack();
+			break;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEFRONT:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveFront();
+			break;
+		default:
+			break;
+		}
+	}
+	
+	/* Default exit sequence for region simple robot movement */
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement() {
+		switch (stateVector[0]) {
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEBACK:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveBack();
+			break;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_OBSTACLE_DODGING_OBSTACLES_MOVES_SIMPLE_ROBOT_MOVEMENT_MOVEFRONT:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveFront();
 			break;
 		default:
 			break;
@@ -1079,13 +1079,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 	}
 	
 	/* Default exit sequence for region do not cross a virtual wall */
-	private void exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall() {
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall() {
 		switch (stateVector[0]) {
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
-			exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
 			break;
-		case MOVE_ROBOT_IS_RUNNING_RÉGION__ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
-			exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
 			break;
 		default:
 			break;
@@ -1120,23 +1120,23 @@ public class Statechart2 implements IStatemachine, ITimed {
 	}
 	
 	/* Default react sequence for initial entry  */
-	private void react_move_robot_is_running_R_gion___entry_Default() {
-		enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_default();
+	private void react_move_robot_is_running_robot_is_in_cleaning_mode__entry_Default() {
+		enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_default();
 	}
 	
 	/* Default react sequence for initial entry  */
-	private void react_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1__entry_Default() {
-		enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveFront_default();
+	private void react_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement__entry_Default() {
+		enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveFront_default();
 	}
 	
 	/* Default react sequence for initial entry  */
-	private void react_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle__entry_Default() {
-		enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_default();
+	private void react_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles__entry_Default() {
+		enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_default();
 	}
 	
 	/* Default react sequence for initial entry  */
-	private void react_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall__entry_Default() {
-		enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default();
+	private void react_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall__entry_Default() {
+		enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default();
 	}
 	
 	/* Default react sequence for initial entry  */
@@ -1161,13 +1161,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__robot_and_obstacle_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (robotIsBlocked) {
-				exitSequence_move_robot_is_running_R_gion__robot_and_obstacle();
-				enterSequence_move_robot_is_running_R_gion__blocage_default();
+				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle();
+				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_blocage_default();
 				move_robot_is_running_react(0);
 				
 				transitioned_after = 0;
@@ -1180,21 +1180,21 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (thereIsAnObstacle) {
-				exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning();
-				enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveBack_default();
-				move_robot_is_running_R_gion__robot_and_obstacle_react(0);
+				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning();
+				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveBack_default();
+				move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_react(0);
 				
 				transitioned_after = 0;
 			} else {
 				if (thereIsNoObstacle) {
-					exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning();
-					enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_default();
-					move_robot_is_running_R_gion__robot_and_obstacle_react(0);
+					exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning();
+					enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_default();
+					move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_react(0);
 					
 					transitioned_after = 0;
 				}
@@ -1202,41 +1202,41 @@ public class Statechart2 implements IStatemachine, ITimed {
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__robot_and_obstacle_react(transitioned_before);
+			transitioned_after = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (thereIsAGapDown) {
-				exitSequence_move_robot_is_running_R_gion__robot_and_obstacle();
+				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle();
 				raiseMoveBack();
 				
-				enterSequence_move_robot_is_running_R_gion__gap_down_default();
+				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_gap_down_default();
 				move_robot_is_running_react(0);
 				
 				transitioned_after = 0;
 			} else {
 				if (thereIsAnObstacle) {
-					exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves();
-					enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning_default();
-					move_robot_is_running_R_gion__robot_and_obstacle_react(0);
+					exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves();
+					enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning_default();
+					move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_react(0);
 					
 					transitioned_after = 0;
 				} else {
 					if (thereIsAVirtualWall) {
-						exitSequence_move_robot_is_running_R_gion__robot_and_obstacle();
-						enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_default();
+						exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle();
+						enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_default();
 						move_robot_is_running_react(0);
 						
 						transitioned_after = 0;
 					} else {
 						if (thereIsAnObject) {
-							exitSequence_move_robot_is_running_R_gion__robot_and_obstacle();
-							enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition_default();
+							exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle();
+							enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition_default();
 							move_robot_is_running_react(0);
 							
 							transitioned_after = 0;
@@ -1247,63 +1247,63 @@ public class Statechart2 implements IStatemachine, ITimed {
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__robot_and_obstacle_react(transitioned_before);
+			transitioned_after = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveBack_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveBack_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (thereIsNoObstacleFront) {
-				exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves();
-				enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning_default();
-				move_robot_is_running_R_gion__robot_and_obstacle_react(0);
+				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves();
+				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning_default();
+				move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_react(0);
 				
 				transitioned_after = 0;
 			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_react(transitioned_before);
+			transitioned_after = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveFront_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveFront_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (thereIsAFrontObstacle) {
-				exitSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveFront();
-				enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_r1_moveBack_default();
-				move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_react(0);
+				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveFront();
+				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_moveBack_default();
+				move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_react(0);
 				
 				transitioned_after = 0;
 			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_react(transitioned_before);
+			transitioned_after = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__gap_down_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_gap_down_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (thereIsAGapDown) {
-				exitSequence_move_robot_is_running_R_gion__gap_down();
-				enterSequence_move_robot_is_running_R_gion__gap_down_default();
+				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_gap_down();
+				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_gap_down_default();
 				move_robot_is_running_react(0);
 				
 				transitioned_after = 0;
 			} else {
 				if (thereIsnoGap) {
-					exitSequence_move_robot_is_running_R_gion__gap_down();
-					enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_turning_default();
+					exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_gap_down();
+					enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_turning_default();
 					move_robot_is_running_react(0);
 					
 					transitioned_after = 0;
@@ -1317,7 +1317,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__robots_and_object_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
@@ -1329,44 +1329,44 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__robots_and_object_r1_grip_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_grip_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__robots_and_object_react(transitioned_before);
+			transitioned_after = move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__robots_and_object_r1_gripPosition_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (readyToGrip) {
-				exitSequence_move_robot_is_running_R_gion__robots_and_object_r1_gripPosition();
-				enterSequence_move_robot_is_running_R_gion__robots_and_object_r1_grip_default();
-				move_robot_is_running_R_gion__robots_and_object_react(0);
+				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition();
+				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_grip_default();
+				move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_react(0);
 				
 				transitioned_after = 0;
 			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__robots_and_object_react(transitioned_before);
+			transitioned_after = move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__blocage_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_blocage_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (thereIsNoObstacle) {
-				exitSequence_move_robot_is_running_R_gion__blocage();
-				enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_default();
+				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_blocage();
+				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_default();
 				move_robot_is_running_react(0);
 				
 				transitioned_after = 0;
@@ -1379,13 +1379,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__robot_and_virtualWall_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (thereIsNoVirtualWall) {
-				exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall();
-				enterSequence_move_robot_is_running_R_gion__robot_and_obstacle_dodgeObstacle_moves_default();
+				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall();
+				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_default();
 				move_robot_is_running_react(0);
 				
 				transitioned_after = 0;
@@ -1398,40 +1398,40 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (thereIsAVirtualWall) {
-				exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
-				enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_default();
-				move_robot_is_running_R_gion__robot_and_virtualWall_react(0);
+				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop();
+				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_default();
+				move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_react(0);
 				
 				transitioned_after = 0;
 			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__robot_and_virtualWall_react(transitioned_before);
+			transitioned_after = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_react(transitioned_before);
 		}
 		return transitioned_after;
 	}
 	
-	private long move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_react(long transitioned_before) {
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
 			if (thereIsAVirtualWall) {
-				exitSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
-				enterSequence_move_robot_is_running_R_gion__robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default();
-				move_robot_is_running_R_gion__robot_and_virtualWall_react(0);
+				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
+				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_stop_default();
+				move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_react(0);
 				
 				transitioned_after = 0;
 			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_R_gion__robot_and_virtualWall_react(transitioned_before);
+			transitioned_after = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_react(transitioned_before);
 		}
 		return transitioned_after;
 	}

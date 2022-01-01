@@ -44,6 +44,7 @@ public class PolyCreateControler extends Supervisor {
 	static int MAX_SPEED = 18;
 	static int NULL_SPEED = 0;
 	static int HALF_SPEED = 6;
+	static int GRIP_SPEED = 3;
 	static int TURN_SPEED = 1;
 	static int MIN_SPEED = -18;
 	static double turnPrecision= 0.25;
@@ -230,11 +231,7 @@ public class PolyCreateControler extends Supervisor {
 
 	//////stateChart Methods//////
 	public void check() {
-		this.theChecker.freePathCheck();
-		this.theChecker.CollisionCheck();
-		this.theChecker.objectCheck();
-		this.theChecker.gapAndStairsCheck();
-		this.theChecker.objectCheckBack();
+		this.theChecker.listen();
 	}
 	
 	/**
@@ -254,6 +251,11 @@ public class PolyCreateControler extends Supervisor {
 	public void goBackward() {
 		leftMotor.setVelocity(-HALF_SPEED);
 		rightMotor.setVelocity(-HALF_SPEED);
+	}
+	
+	public void goBackSlowly() {
+		leftMotor.setVelocity(-GRIP_SPEED);
+		rightMotor.setVelocity(-GRIP_SPEED);
 	}
 
 	public void stop() {
@@ -285,34 +287,11 @@ public class PolyCreateControler extends Supervisor {
  *
  */
 	public void gripPosition() {
-		CameraRecognitionObject[] backObjects = backCamera.getRecognitionObjects();
-		if (backObjects.length == 0) {
-			turn(Math.PI + 0.263999383);
-		}
-		else if (backObjects.length > 0) {
-			CameraRecognitionObject firstBackObject = backObjects[0];
-				
-			int[] backObjectPosition = firstBackObject.getPositionOnImage();
-			int objectPosition = backObjectPosition[0];
-        
-			while (objectPosition > 128 || objectPosition< 123) {
-				this.isTurning=true;
-	    		stop();
-	    		doStep();
-	        	leftMotor.setVelocity(TURN_SPEED);
-	    		rightMotor.setVelocity(-TURN_SPEED);
-	    		System.out.println("The robot is turning");
-	    		System.out.println("Position of object is :" + objectPosition);
-	    		doStep();
-	    		System.out.println(" ");
-			}
-		this.isTurning=false;
-		}
-		System.out.println("I will stop ");
-		stop();
+		this.turn(Math.PI + 0.1987);
+		System.out.println("Starting backing off\n");
 		openGripper();
 		System.out.println("Gripper opened\n");
-		goBackward();
+		goBackSlowly();
 	}
 	
 	public void grip() {

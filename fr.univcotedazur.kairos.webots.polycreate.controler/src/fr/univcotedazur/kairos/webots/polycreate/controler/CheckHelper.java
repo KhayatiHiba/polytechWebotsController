@@ -10,6 +10,16 @@ public class CheckHelper {
 		this.controler = poly;
 	}
 
+	
+	public void listen() {
+		freePathCheck();
+		CollisionCheck();
+		if (objectCheck() == true) {
+			position();
+		}
+		gapAndStairsCheck();
+		objectCheckBack();
+	}
 	/**
 	 * Detects obstacles in the environment using the distance sensors. 
 	 * When the robot approaches an obstacle it raises it's presence. 
@@ -90,10 +100,13 @@ public class CheckHelper {
 	/**
 	 * 
 	 */
-	public void objectCheck() {
+	public boolean objectCheck() {
 		CameraRecognitionObject[] frontObjects = controler.frontCamera.getRecognitionObjects();
+		boolean isWorking = false;
+		
 		if(frontObjects.length >= 1) {
 			CameraRecognitionObject firstobj = frontObjects[0];
+			
 			
 			double[] frontObjPos = firstobj.getPosition();
 	        double xObj = frontObjPos[0];
@@ -113,10 +126,50 @@ public class CheckHelper {
 			//double RobToObj = Math.abs(distanceRob-distanceObj);
 			//System.out.println("Distance between object and robot "+ RobToObj );
 			
-			if (Math.round(distanceObj-0.3) <=0) {
-				controler.theCtrl.raiseThereIsAnObject();
+			if (Math.round(distanceObj-0.4) <=0) {
+				isWorking = true ;
+				System.out.println("Distance optimale from robot to object achieved");
+				System.out.println("Adjusting angle to face object");
+				
+				int[] objectPosition = firstobj.getPositionOnImage();
+				int objectPos = objectPosition[0];
+				System.out.println("The position of the object is: " + objectPos);
+				 
+				while (position() > 248 ||position() < 244) {
+					controler.stop();
+					controler.doStep();
+					//Turning to adjust into the object view
+					int sign = 1;
+					if (objectPos<100) { sign = -1;}
+					if (objectPos>248) { sign = -1;}
+					controler.leftMotor.setVelocity(sign*1);
+					controler.rightMotor.setVelocity(sign*-1);	
+					controler.doStep();
+				}
+				if (position()>=244 && position()<=248) {
+					System.out.println("There is an object in the center");
+					controler.stop();
+					controler.theCtrl.raiseThereIsAnObject();
+				}
+				
 			}
 		}
+		return isWorking;
+	}
+	
+	public int position() {
+		CameraRecognitionObject[] frontObjects = controler.frontCamera.getRecognitionObjects();
+		CameraRecognitionObject firstobj = frontObjects[0];
+		
+		int[] objectPosition1 = firstobj.getPositionOnImage();
+		int objectPos = objectPosition1[0];
+		if (objectPos>=244 && objectPos<=248) {
+			System.out.println("There is an object in the center");
+			controler.stop();
+			controler.theCtrl.raiseThereIsAnObject();
+		}
+		System.out.println("The position of the object is: " + objectPos);
+		return objectPos;
 	}
 	
 	
