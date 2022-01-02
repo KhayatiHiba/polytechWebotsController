@@ -52,6 +52,8 @@ public class PolyCreateControler extends Supervisor {
 	static double WHEEL_RADIUS = 0.031;
 	static double AXLE_LENGTH = 0.271756;
 	static double ENCODER_RESOLUTION = 507.9188;
+	
+	 boolean left= false;
 
 	/**
 	 * the inkEvaporation parameter in the WorldInfo element of the robot scene may be interesting to access
@@ -114,9 +116,6 @@ public class PolyCreateControler extends Supervisor {
 	public double robotSavedPositionY;
 	public double robotSavedOrientation;
 
-	public double distanceObj, distanceRob;
-
-	double yObj, xObj;
 	
 	public PolyCreateControler() {
 		timestep = (int) Math.round(this.getBasicTimeStep());
@@ -264,8 +263,8 @@ public class PolyCreateControler extends Supervisor {
 	}
 	
 	public void openGripper() {
-		gripMotors[0].setPosition(0.5);
-		gripMotors[1].setPosition(0.5);
+		gripMotors[0].setPosition(0.8);
+		gripMotors[1].setPosition(0.8);
 	}
 
 	public void closeGripper() {

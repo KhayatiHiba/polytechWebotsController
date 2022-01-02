@@ -29,10 +29,12 @@ public class CheckHelper {
 	public void CollisionCheck() {
 		if(controler.frontLeftDistanceSensor.getValue() < 250 || controler.isThereCollisionAtLeft()) {
 			System.out.println("Obstacle at left detected\n" );
+			controler.left= true;
 			controler.theCtrl.raiseThereIsAnObstacle();	
 		}
 		else if(controler.frontRightDistanceSensor.getValue() < 250 ||controler.isThereCollisionAtRight()) {
 			System.out.println("Obstacle at right detected\n" );
+			controler.left= false;
 			controler.theCtrl.raiseThereIsAnObstacle();
 		}
 		else if( controler.frontDistanceSensor.getValue() < 250){
@@ -134,24 +136,24 @@ public class CheckHelper {
 				int[] objectPosition = firstobj.getPositionOnImage();
 				int objectPos = objectPosition[0];
 				System.out.println("The position of the object is: " + objectPos);
-				 
-				while (position() > 248 ||position() < 244) {
-					controler.stop();
-					controler.doStep();
-					//Turning to adjust into the object view
-					int sign = 1;
-					if (objectPos<100) { sign = -1;}
-					if (objectPos>248) { sign = -1;}
-					controler.leftMotor.setVelocity(sign*1);
-					controler.rightMotor.setVelocity(sign*-1);	
-					controler.doStep();
-				}
-				if (position()>=244 && position()<=248) {
-					System.out.println("There is an object in the center");
-					controler.stop();
-					controler.theCtrl.raiseThereIsAnObject();
-				}
 				
+				boolean condition = position()>150 && position()<350; 
+				 
+				if (condition) {
+					
+					while ((position() > 248 || position() < 243) && (10 < position() && position() < 500) ){
+						controler.stop();
+						controler.doStep();
+						//Turning to adjust into the object view
+						int sign = 1;
+						if (objectPos<100) { sign = -1;}
+						if (objectPos>248) { sign = -1;}
+						controler.leftMotor.setVelocity(sign*1);
+						controler.rightMotor.setVelocity(sign*-1);	
+						controler.doStep();
+					}
+				
+				}
 			}
 		}
 		return isWorking;
@@ -163,11 +165,18 @@ public class CheckHelper {
 		
 		int[] objectPosition1 = firstobj.getPositionOnImage();
 		int objectPos = objectPosition1[0];
-		if (objectPos>=244 && objectPos<=248) {
-			System.out.println("There is an object in the center");
-			controler.stop();
-			controler.theCtrl.raiseThereIsAnObject();
+		
+		boolean condition = objectPos>150 && objectPos<350; 
+		 
+		if (condition) {
+			if (objectPos>=243 && objectPos<=248) {
+				System.out.println("There is an object in the center");
+				controler.stop();
+				controler.theCtrl.raiseThereIsAnObject();
+			}
 		}
+			
+		
 		System.out.println("The position of the object is: " + objectPos);
 		return objectPos;
 	}

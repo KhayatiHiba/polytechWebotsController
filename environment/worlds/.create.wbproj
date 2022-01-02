@@ -11,5 +11,5 @@ textFiles: -1
 globalOptionalRendering: DistanceSensorRays
 consoles: Console:All:All
 renderingDevicePerspectives: Create:backCamera;1;0.75;0;0.697247
-renderingDevicePerspectives: Create:frontCamera;1;0.945313;0.401478;0.627785
+renderingDevicePerspectives: Create:frontCamera;1;0.945313;0.383005;0.68021
 renderingDevicePerspectives: robot:ground_display;0;0.375;0;0

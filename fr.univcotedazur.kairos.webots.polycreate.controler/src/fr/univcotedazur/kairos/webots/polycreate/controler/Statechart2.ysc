@@ -78,7 +78,7 @@
       <vertices xsi:type="sgraph:State" xmi:id="_04UAYFQYEeyq8oZf4Md32g" specification="every 300ms / raise doPW" name="wait" incomingTransitions="_1lkH8FQYEeyq8oZf4Md32g"/>
     </regions>
     <regions xmi:id="_eNaTkFtcEeyjVIb1teK9zg" name="check">
-      <vertices xsi:type="sgraph:State" xmi:id="_mt5G7FtcEeyjVIb1teK9zg" specification="every 200ms / raise check" name="check" incomingTransitions="_osh90FtcEeyjVIb1teK9zg"/>
+      <vertices xsi:type="sgraph:State" xmi:id="_mt5G7FtcEeyjVIb1teK9zg" specification="every 100ms / raise check" name="check" incomingTransitions="_osh90FtcEeyjVIb1teK9zg"/>
       <vertices xsi:type="sgraph:Entry" xmi:id="_nphBqltcEeyjVIb1teK9zg">
         <outgoingTransitions xmi:id="_osh90FtcEeyjVIb1teK9zg" specification="" target="_mt5G7FtcEeyjVIb1teK9zg"/>
       </vertices>

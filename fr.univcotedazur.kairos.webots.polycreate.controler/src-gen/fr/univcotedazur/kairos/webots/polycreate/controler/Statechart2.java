@@ -782,7 +782,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Entry action for state 'check'. */
 	private void entryAction_check_check() {
-		timerService.setTimer(this, 1, 200, true);
+		timerService.setTimer(this, 1, 100, true);
 	}
 	
 	/* Exit action for state 'wait'. */
