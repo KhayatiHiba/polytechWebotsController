@@ -20,10 +20,12 @@ public class Statechart2 implements IStatemachine, ITimed {
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT,
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIP,
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_STORE_OBJECT_IN_GRIPPER,
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE,
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL,
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP,
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK,
+		MOVE_INIT,
 		PASSIVE_WAIT_WAIT,
 		CHECK_CHECK,
 		$NULLSTATE$
@@ -128,12 +130,11 @@ public class Statechart2 implements IStatemachine, ITimed {
 		thereIsNoObstacleFront = false;
 		thereIsnoGap = false;
 		thereIsAnObject = false;
-		theGripIsClose = false;
-		theGripIsNotClose = false;
-		theObjectIsGrip = false;
+		isGripped = false;
 		objectGrip = false;
 		readyToGrip = false;
 		gripObject = false;
+		saved = false;
 		robotIsBlocked = false;
 		isFacingTheObject = false;
 		timeEvents[0] = false;
@@ -164,6 +165,9 @@ public class Statechart2 implements IStatemachine, ITimed {
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION:
 			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition_react(transitioned);
 			break;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_STORE_OBJECT_IN_GRIPPER:
+			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_store_object_in_gripper_react(transitioned);
+			break;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE:
 			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_blocage_react(transitioned);
 			break;
@@ -172,6 +176,9 @@ public class Statechart2 implements IStatemachine, ITimed {
 			break;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
 			transitioned = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_react(transitioned);
+			break;
+		case MOVE_INIT:
+			transitioned = move_init_react(transitioned);
 			break;
 		default:
 			break;
@@ -215,7 +222,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 			clearInEvents();
 			
 			nextEvent();
-		} while ((((((((((((((((((((thereIsAnObstacle || thereIsNoObstacle) || thereIsAFrontObstacle) || thereIsAVirtualWall) || thereIsAnObjectFront) || thereIsNoVirtualWall) || thereIsAGapDown) || thereIsNoObstacleFront) || thereIsnoGap) || thereIsAnObject) || theGripIsClose) || theGripIsNotClose) || theObjectIsGrip) || objectGrip) || readyToGrip) || gripObject) || robotIsBlocked) || isFacingTheObject) || timeEvents[0]) || timeEvents[1]));
+		} while (((((((((((((((((((thereIsAnObstacle || thereIsNoObstacle) || thereIsAFrontObstacle) || thereIsAVirtualWall) || thereIsAnObjectFront) || thereIsNoVirtualWall) || thereIsAGapDown) || thereIsNoObstacleFront) || thereIsnoGap) || thereIsAnObject) || isGripped) || objectGrip) || readyToGrip) || gripObject) || saved) || robotIsBlocked) || isFacingTheObject) || timeEvents[0]) || timeEvents[1]));
 		
 		isExecuting = false;
 	}
@@ -251,11 +258,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_GAP_DOWN;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT:
 			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION.ordinal();
+					MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_STORE_OBJECT_IN_GRIPPER.ordinal();
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIP:
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIP;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION:
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_STORE_OBJECT_IN_GRIPPER:
+			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_STORE_OBJECT_IN_GRIPPER;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE:
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL:
@@ -265,6 +274,8 @@ public class Statechart2 implements IStatemachine, ITimed {
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
+		case MOVE_INIT:
+			return stateVector[0] == State.MOVE_INIT;
 		case PASSIVE_WAIT_WAIT:
 			return stateVector[1] == State.PASSIVE_WAIT_WAIT;
 		case CHECK_CHECK:
@@ -410,37 +421,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 		}
 	}
 	
-	private boolean theGripIsClose;
+	private boolean isGripped;
 	
 	
-	public void raiseTheGripIsClose() {
+	public void raiseIsGripped() {
 		synchronized(Statechart2.this) {
 			inEventQueue.add(() -> {
-				theGripIsClose = true;
-			});
-			runCycle();
-		}
-	}
-	
-	private boolean theGripIsNotClose;
-	
-	
-	public void raiseTheGripIsNotClose() {
-		synchronized(Statechart2.this) {
-			inEventQueue.add(() -> {
-				theGripIsNotClose = true;
-			});
-			runCycle();
-		}
-	}
-	
-	private boolean theObjectIsGrip;
-	
-	
-	public void raiseTheObjectIsGrip() {
-		synchronized(Statechart2.this) {
-			inEventQueue.add(() -> {
-				theObjectIsGrip = true;
+				isGripped = true;
 			});
 			runCycle();
 		}
@@ -477,6 +464,18 @@ public class Statechart2 implements IStatemachine, ITimed {
 		synchronized(Statechart2.this) {
 			inEventQueue.add(() -> {
 				gripObject = true;
+			});
+			runCycle();
+		}
+	}
+	
+	private boolean saved;
+	
+	
+	public void raiseSaved() {
+		synchronized(Statechart2.this) {
+			inEventQueue.add(() -> {
+				saved = true;
 			});
 			runCycle();
 		}
@@ -554,6 +553,22 @@ public class Statechart2 implements IStatemachine, ITimed {
 		return moveFrontObservable;
 	}
 	
+	private boolean store;
+	
+	
+	protected void raiseStore() {
+		synchronized(Statechart2.this) {
+			store = true;
+			storeObservable.next(null);
+		}
+	}
+	
+	private Observable<Void> storeObservable = new Observable<Void>();
+	
+	public Observable<Void> getStore() {
+		return storeObservable;
+	}
+	
 	private boolean check;
 	
 	
@@ -616,6 +631,22 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	public Observable<Void> getStop() {
 		return stopObservable;
+	}
+	
+	private boolean goToEvent;
+	
+	
+	protected void raiseGoTo() {
+		synchronized(Statechart2.this) {
+			goToEvent = true;
+			goToEventObservable.next(null);
+		}
+	}
+	
+	private Observable<Void> goToEventObservable = new Observable<Void>();
+	
+	public Observable<Void> getGoToEvent() {
+		return goToEventObservable;
 	}
 	
 	private boolean turnRound;
@@ -760,6 +791,11 @@ public class Statechart2 implements IStatemachine, ITimed {
 		raiseGripPosition();
 	}
 	
+	/* Entry action for state 'store object in gripper'. */
+	private void entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_store_object_in_gripper() {
+		raiseStore();
+	}
+	
 	/* Entry action for state 'blocage'. */
 	private void entryAction_move_robot_is_running_robot_is_in_cleaning_mode_blocage() {
 		raiseDeblock();
@@ -775,6 +811,11 @@ public class Statechart2 implements IStatemachine, ITimed {
 		raiseTurnRound();
 	}
 	
+	/* Entry action for state 'init'. */
+	private void entryAction_move_init() {
+		raiseSaveRobotPosition();
+	}
+	
 	/* Entry action for state 'wait'. */
 	private void entryAction_passive_wait_wait() {
 		timerService.setTimer(this, 0, 300, true);
@@ -782,7 +823,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Entry action for state 'check'. */
 	private void entryAction_check_check() {
-		timerService.setTimer(this, 1, 100, true);
+		timerService.setTimer(this, 1, 30, true);
 	}
 	
 	/* Exit action for state 'wait'. */
@@ -852,6 +893,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 		stateConfVectorPosition = 0;
 	}
 	
+	/* 'default' enter sequence for state store object in gripper */
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_store_object_in_gripper_default() {
+		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_store_object_in_gripper();
+		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_STORE_OBJECT_IN_GRIPPER;
+		stateConfVectorPosition = 0;
+	}
+	
 	/* 'default' enter sequence for state blocage */
 	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_blocage_default() {
 		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_blocage();
@@ -875,6 +923,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block_default() {
 		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
 		stateVector[0] = State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
+		stateConfVectorPosition = 0;
+	}
+	
+	/* 'default' enter sequence for state init */
+	private void enterSequence_move_init_default() {
+		entryAction_move_init();
+		stateVector[0] = State.MOVE_INIT;
 		stateConfVectorPosition = 0;
 	}
 	
@@ -973,6 +1028,12 @@ public class Statechart2 implements IStatemachine, ITimed {
 		stateConfVectorPosition = 0;
 	}
 	
+	/* Default exit sequence for state store object in gripper */
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_store_object_in_gripper() {
+		stateVector[0] = State.$NULLSTATE$;
+		stateConfVectorPosition = 0;
+	}
+	
 	/* Default exit sequence for state blocage */
 	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_blocage() {
 		stateVector[0] = State.$NULLSTATE$;
@@ -992,6 +1053,12 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Default exit sequence for state virtual block */
 	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block() {
+		stateVector[0] = State.$NULLSTATE$;
+		stateConfVectorPosition = 0;
+	}
+	
+	/* Default exit sequence for state init */
+	private void exitSequence_move_init() {
 		stateVector[0] = State.$NULLSTATE$;
 		stateConfVectorPosition = 0;
 	}
@@ -1033,6 +1100,9 @@ public class Statechart2 implements IStatemachine, ITimed {
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION:
 			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition();
 			break;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_STORE_OBJECT_IN_GRIPPER:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_store_object_in_gripper();
+			break;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE:
 			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_blocage();
 			break;
@@ -1041,6 +1111,9 @@ public class Statechart2 implements IStatemachine, ITimed {
 			break;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
 			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
+			break;
+		case MOVE_INIT:
+			exitSequence_move_init();
 			break;
 		default:
 			break;
@@ -1116,7 +1189,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Default react sequence for initial entry  */
 	private void react_move__entry_Default() {
-		enterSequence_move_robot_is_running_default();
+		enterSequence_move_init_default();
 	}
 	
 	/* Default react sequence for initial entry  */
@@ -1333,6 +1406,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 		long transitioned_after = transitioned_before;
 		
 		if (transitioned_after<0) {
+			if (isGripped) {
+				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_grip();
+				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_store_object_in_gripper_default();
+				move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_react(0);
+				
+				transitioned_after = 0;
+			}
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
@@ -1352,6 +1432,18 @@ public class Statechart2 implements IStatemachine, ITimed {
 				
 				transitioned_after = 0;
 			}
+		}
+		/* If no transition was taken then execute local reactions */
+		if (transitioned_after==transitioned_before) {
+			transitioned_after = move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_react(transitioned_before);
+		}
+		return transitioned_after;
+	}
+	
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_store_object_in_gripper_react(long transitioned_before) {
+		long transitioned_after = transitioned_before;
+		
+		if (transitioned_after<0) {
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
@@ -1432,6 +1524,19 @@ public class Statechart2 implements IStatemachine, ITimed {
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
 			transitioned_after = move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_react(transitioned_before);
+		}
+		return transitioned_after;
+	}
+	
+	private long move_init_react(long transitioned_before) {
+		long transitioned_after = transitioned_before;
+		
+		if (transitioned_after<0) {
+			if (saved) {
+				exitSequence_move_init();
+				enterSequence_move_robot_is_running_default();
+				transitioned_after = 0;
+			}
 		}
 		return transitioned_after;
 	}

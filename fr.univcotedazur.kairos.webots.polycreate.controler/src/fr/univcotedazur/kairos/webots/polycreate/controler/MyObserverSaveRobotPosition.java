@@ -15,7 +15,7 @@ public class MyObserverSaveRobotPosition implements Observer{
 	@Override
 	public void next(Object value) {
 		// TODO Auto-generated method stub
-		//System.out.println("Robot position saved");
+		System.out.println("Robot position saved");
 		theController.saveRobotPosition();
 		
 	}

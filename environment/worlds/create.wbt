@@ -407,7 +407,7 @@ DEF IROBOT_CREATE Robot {
                   acceleration 17.4533
                   controlPID 3 0 0
                   maxVelocity 1.0472
-                  minPosition -1.367779067905393e-07
+                  minPosition -2.8897030043895175e-07
                   maxPosition 1.0472
                   maxTorque 5.44164
                 }
@@ -1323,9 +1323,7 @@ Robot {
   supervisor TRUE
 }
 DEF can Can {
-  hidden linearVelocity_0 -3.237956097608082e-17 6.367461044678785e-07 -4.756834554387989e-17
-  hidden angularVelocity_0 -8.479084729523221e-16 2.674417265703404e-16 3.8092379575835106e-16
-  translation -1.55 0.06096257856620235 1.94
+  translation -1.55 0.0609626 2.65
   rotation 0.11626408851530645 -0.5132643816981696 0.850318961450173 1.1668723971849181e-16
 }
 DEF can Can {

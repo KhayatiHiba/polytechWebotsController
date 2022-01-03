@@ -4,7 +4,10 @@ import com.cyberbotics.webots.controller.CameraRecognitionObject;
 
 public class CheckHelper {
 	private PolyCreateControler controler;
+	double value; 
 	static double turnPrecision= 0.25;
+	boolean checkBack = true;
+	boolean gripped = false;
 	
 	public CheckHelper(PolyCreateControler poly) {
 		this.controler = poly;
@@ -17,8 +20,19 @@ public class CheckHelper {
 		if (objectCheck() == true) {
 			position();
 		}
+		if (checkBack) {
+			objectCheckBack();
+			if(objectCheckBack()== true) {
+				checkBack= false;
+				isGripped();
+			}
+		}
+		
 		gapAndStairsCheck();
-		objectCheckBack();
+		
+		if (!checkBack) {
+			positionCheck();
+		}
 	}
 	/**
 	 * Detects obstacles in the environment using the distance sensors. 
@@ -137,7 +151,7 @@ public class CheckHelper {
 				int objectPos = objectPosition[0];
 				System.out.println("The position of the object is: " + objectPos);
 				
-				boolean condition = position()>150 && position()<350; 
+				boolean condition = position()>35 && position()<435; 
 				 
 				if (condition) {
 					
@@ -152,7 +166,16 @@ public class CheckHelper {
 						controler.rightMotor.setVelocity(sign*-1);	
 						controler.doStep();
 					}
-				
+				}
+				if(position()<=35) {
+					System.out.println("Object at left detected\n" );
+					controler.left= false;
+					controler.theCtrl.raiseThereIsAnObstacle();
+				}
+				if(position()>=435) {
+					System.out.println("Object at right detected\n" );
+					controler.left= false;
+					controler.theCtrl.raiseThereIsAnObstacle();
 				}
 			}
 		}
@@ -176,7 +199,6 @@ public class CheckHelper {
 			}
 		}
 			
-		
 		System.out.println("The position of the object is: " + objectPos);
 		return objectPos;
 	}
@@ -185,16 +207,39 @@ public class CheckHelper {
 	/**
 	 * 
 	 */
-	public void objectCheckBack() {
+	public boolean objectCheckBack() {
 		CameraRecognitionObject[] backObjects = controler.backCamera.getRecognitionObjects();
-		
+		boolean condition = false;
 		if(backObjects.length >= 1) {
 			System.out.println("Distance between object and gripper "+ controler.getObjectDistanceToGripper() );
-			if(controler.getObjectDistanceToGripper() < 115) {
+			if(controler.getObjectDistanceToGripper() < 150) {
+				controler.leftMotor.setVelocity(-1);
+				controler.rightMotor.setVelocity(-1);
+			}
+			if(controler.getObjectDistanceToGripper() < 131) {
 				controler.theCtrl.raiseReadyToGrip();
 				System.out.println("I raised ready to grip\n");
-	        }
+				value = controler.getObjectDistanceToGripper();
+				condition = true;
+	        }	
+		}
+		return condition;
+	}
+	public void isGripped() {
+		if (controler.getObjectDistanceToGripper()== value) {
+			controler.theCtrl.raiseIsGripped();
+			System.out.println("heeeeere");
+			checkBack = false;
+		}
+		else{
+			checkBack= true;
 		}
 	}
-	
+
+	public void positionCheck() {
+		double posX = Math.round(controler.getSelf().getPosition()[0]);
+		double posY = Math.round(controler.getSelf().getPosition()[2]);
+		double orientation = Math.acos(controler.getSelf().getOrientation()[0]);
+		controler.compare(posX,posY,orientation);
+	}
 }

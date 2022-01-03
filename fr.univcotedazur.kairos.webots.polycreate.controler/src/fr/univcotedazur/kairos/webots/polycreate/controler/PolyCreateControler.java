@@ -13,8 +13,9 @@ package fr.univcotedazur.kairos.webots.polycreate.controler;
 
 import java.util.Random;
 
+
 import javax.swing.Timer;
-import javax.swing.text.Position;
+
 
 import fr.univcotedazur.kairos.webots.polycreate.controler.Statechart2;
 
@@ -111,10 +112,18 @@ public class PolyCreateControler extends Supervisor {
 	private boolean isTurning = false;
 	public boolean carryObject = false;
 	public boolean facingTheObject = false;
-	//saving robot position
+	
+	public boolean firstObject=true;;
+	
+	//Saving robot position
 	public double robotSavedPositionX;
 	public double robotSavedPositionY;
 	public double robotSavedOrientation;
+	
+	//Robot position
+	public long posX;
+	public long posY;
+	public double orientation;
 
 	
 	public PolyCreateControler() {
@@ -206,11 +215,14 @@ public class PolyCreateControler extends Supervisor {
 		theCtrl.getCheck().subscribe(new MyObserverCheck(this));
 		
 		//Objects
+		theCtrl.getSaveRobotPosition().subscribe(new MyObserverSaveRobotPosition(this));
 		theCtrl.getGripPosition().subscribe(new MyObserverGripPosition(this));
 		theCtrl.getGrip().subscribe(new MyObserverGrip(this));
+		theCtrl.getStore().subscribe(new MyObserverStore(this));
+		
 		
 		theCtrl.getDoPW().subscribe(new MyObserverPassiveWait(this));
-		theCtrl.getSaveRobotPosition().subscribe(new MyObserverSaveRobotPosition(this));
+		
 		
 
 		///////////////////////////////// 			Observers end		///////////////////////////////////////////////////
@@ -246,6 +258,11 @@ public class PolyCreateControler extends Supervisor {
 		leftMotor.setVelocity(MAX_SPEED);
 		rightMotor.setVelocity(MAX_SPEED);
 	}
+	
+	public void goForwardSlowly() {
+		leftMotor.setVelocity(HALF_SPEED);
+		rightMotor.setVelocity(HALF_SPEED);
+	}
 
 	public void goBackward() {
 		leftMotor.setVelocity(-HALF_SPEED);
@@ -274,13 +291,35 @@ public class PolyCreateControler extends Supervisor {
 	
 	public void saveRobotPosition() {
 		this.robotSavedPositionX = Math.round(this.getSelf().getPosition()[0]);
-		//System.out.println("position x saved: "+this.robotSavedPositionX);
+		System.out.println("controler.saveRobotPosition()[0]"+ robotSavedPositionX);
 		this.robotSavedPositionY = Math.round(this.getSelf().getPosition()[2]);
-		//System.out.println("position y saved: "+this.robotSavedPositionY);
 		this.robotSavedOrientation = Math.acos(this.getSelf().getOrientation()[0]);
-		//System.out.println("orientation saved: "+this.robotSavedOrientation);
+		
+		theCtrl.raiseSaved();
 	}
-
+	public void compare(double x, double y, double orient) {
+		System.out.println("controler.saveRobotPosition()[0]"+ robotSavedPositionX);
+		System.out.println("X"+ x);
+			doStep();
+		if (x<robotSavedPositionX) {
+			goForward();	
+		}
+		if (x>robotSavedPositionX) {
+			goBackward();
+		}
+		else {
+			stop();
+			openGripper();
+		}
+		
+	}
+	
+	public void store() {
+	
+	this.theChecker.positionCheck();
+	System.out.println("Here");
+	}
+	
 /**
  * Method that position's the robot's in line with the gripper.
  *
@@ -297,6 +336,7 @@ public class PolyCreateControler extends Supervisor {
 		stop();
 		closeGripper();
 		System.out.println("Gripper closed\n");
+		store();
 	}
 	
 	public void turnRound() {
@@ -435,10 +475,6 @@ public class PolyCreateControler extends Supervisor {
 		super.finalize();
 	}
 
-	
 
-	
-
-	
 
 }
