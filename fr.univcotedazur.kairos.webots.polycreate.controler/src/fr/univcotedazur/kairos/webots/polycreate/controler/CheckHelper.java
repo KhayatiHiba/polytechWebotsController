@@ -154,7 +154,22 @@ public class CheckHelper {
 					}
 				
 				}
+				
+				if (position()<=150) {
+					System.out.println("Object at left detected\n" );
+					controler.left= true;
+					controler.theCtrl.raiseThereIsAnObstacle();	
+				}
+				if (position()>=350) {
+					System.out.println("Object at right detected\n" );
+					controler.left= false;
+					controler.theCtrl.raiseThereIsAnObstacle();	
+				}
+				
 			}
+		}
+		else {
+			controler.theCtrl.raiseThereIsNoObject();	
 		}
 		return isWorking;
 	}
@@ -175,7 +190,16 @@ public class CheckHelper {
 				controler.theCtrl.raiseThereIsAnObject();
 			}
 		}
-			
+		if (objectPos<=150) {
+			System.out.println("Object at left detected\n" );
+			controler.left= true;
+			controler.theCtrl.raiseThereIsAnObstacle();	
+		}
+		if (objectPos>=350) {
+			System.out.println("Object at right detected\n" );
+			controler.left= false;
+			controler.theCtrl.raiseThereIsAnObstacle();	
+		}
 		
 		System.out.println("The position of the object is: " + objectPos);
 		return objectPos;
@@ -190,7 +214,7 @@ public class CheckHelper {
 		
 		if(backObjects.length >= 1) {
 			System.out.println("Distance between object and gripper "+ controler.getObjectDistanceToGripper() );
-			if(controler.getObjectDistanceToGripper() < 115) {
+			if(controler.getObjectDistanceToGripper() < 121) {
 				controler.theCtrl.raiseReadyToGrip();
 				System.out.println("I raised ready to grip\n");
 	        }

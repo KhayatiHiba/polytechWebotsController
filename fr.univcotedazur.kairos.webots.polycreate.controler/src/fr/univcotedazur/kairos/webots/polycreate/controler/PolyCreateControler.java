@@ -44,7 +44,7 @@ public class PolyCreateControler extends Supervisor {
 	static int MAX_SPEED = 18;
 	static int NULL_SPEED = 0;
 	static int HALF_SPEED = 6;
-	static int GRIP_SPEED = 3;
+	static int GRIP_SPEED = 2;
 	static int TURN_SPEED = 1;
 	static int MIN_SPEED = -18;
 	static double turnPrecision= 0.25;
@@ -297,6 +297,7 @@ public class PolyCreateControler extends Supervisor {
 		stop();
 		closeGripper();
 		System.out.println("Gripper closed\n");
+		stop();
 		this.carryObject = true;
 	}
 	

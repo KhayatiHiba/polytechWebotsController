@@ -123,6 +123,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		thereIsNoObstacle = false;
 		thereIsAFrontObstacle = false;
 		thereIsAVirtualWall = false;
+		thereIsNoObject = false;
 		thereIsAnObjectFront = false;
 		thereIsNoVirtualWall = false;
 		thereIsAGapDown = false;
@@ -225,7 +226,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 			clearInEvents();
 			
 			nextEvent();
-		} while ((((((((((((((((((((thereIsAnObstacle || thereIsNoObstacle) || thereIsAFrontObstacle) || thereIsAVirtualWall) || thereIsAnObjectFront) || thereIsNoVirtualWall) || thereIsAGapDown) || thereIsNoObstacleFront) || thereIsnoGap) || thereIsAnObject) || theGripIsClose) || theGripIsNotClose) || theObjectIsGrip) || objectGrip) || readyToGrip) || gripObject) || robotIsBlocked) || isFacingTheObject) || timeEvents[0]) || timeEvents[1]));
+		} while (((((((((((((((((((((thereIsAnObstacle || thereIsNoObstacle) || thereIsAFrontObstacle) || thereIsAVirtualWall) || thereIsNoObject) || thereIsAnObjectFront) || thereIsNoVirtualWall) || thereIsAGapDown) || thereIsNoObstacleFront) || thereIsnoGap) || thereIsAnObject) || theGripIsClose) || theGripIsNotClose) || theObjectIsGrip) || objectGrip) || readyToGrip) || gripObject) || robotIsBlocked) || isFacingTheObject) || timeEvents[0]) || timeEvents[1]));
 		
 		isExecuting = false;
 	}
@@ -345,6 +346,18 @@ public class Statechart2 implements IStatemachine, ITimed {
 		synchronized(Statechart2.this) {
 			inEventQueue.add(() -> {
 				thereIsAVirtualWall = true;
+			});
+			runCycle();
+		}
+	}
+	
+	private boolean thereIsNoObject;
+	
+	
+	public void raiseThereIsNoObject() {
+		synchronized(Statechart2.this) {
+			inEventQueue.add(() -> {
+				thereIsNoObject = true;
 			});
 			runCycle();
 		}
@@ -794,7 +807,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Entry action for state 'check'. */
 	private void entryAction_check_check() {
-		timerService.setTimer(this, 1, 100, true);
+		timerService.setTimer(this, 1, 30, true);
 	}
 	
 	/* Exit action for state 'wait'. */
