@@ -20,6 +20,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT,
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIP,
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION,
+		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_SAVE_POSITION_SAVEPOSITION,
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE,
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL,
 		MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_STOP,
@@ -29,7 +30,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		$NULLSTATE$
 	};
 	
-	private final State[] stateVector = new State[3];
+	private final State[] stateVector = new State[4];
 	
 	private ITimerService timerService;
 	
@@ -63,7 +64,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 		}
 	}
 	public Statechart2() {
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 4; i++) {
 			stateVector[i] = State.$NULLSTATE$;
 		}
 		
@@ -106,7 +107,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	 * @see IStatemachine#isActive()
 	 */
 	public synchronized boolean isActive() {
-		return stateVector[0] != State.$NULLSTATE$||stateVector[1] != State.$NULLSTATE$||stateVector[2] != State.$NULLSTATE$;
+		return stateVector[0] != State.$NULLSTATE$||stateVector[1] != State.$NULLSTATE$||stateVector[2] != State.$NULLSTATE$||stateVector[3] != State.$NULLSTATE$;
 	}
 	
 	/** 
@@ -179,8 +180,8 @@ public class Statechart2 implements IStatemachine, ITimed {
 		
 		if (getStateConfVectorPosition()<1) {
 			switch (stateVector[1]) {
-			case PASSIVE_WAIT_WAIT:
-				transitioned = passive_wait_wait_react(transitioned);
+			case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_SAVE_POSITION_SAVEPOSITION:
+				transitioned = move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_save_position_savePosition_react(transitioned);
 				break;
 			default:
 				break;
@@ -188,6 +189,15 @@ public class Statechart2 implements IStatemachine, ITimed {
 		}
 		if (getStateConfVectorPosition()<2) {
 			switch (stateVector[2]) {
+			case PASSIVE_WAIT_WAIT:
+				transitioned = passive_wait_wait_react(transitioned);
+				break;
+			default:
+				break;
+			}
+		}
+		if (getStateConfVectorPosition()<3) {
+			switch (stateVector[3]) {
 			case CHECK_CHECK:
 				transitioned = check_check_react(transitioned);
 				break;
@@ -251,11 +261,13 @@ public class Statechart2 implements IStatemachine, ITimed {
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_GAP_DOWN;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT:
 			return stateVector[0].ordinal() >= State.
-					MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION.ordinal();
+					MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT.ordinal()&& stateVector[0].ordinal() <= State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_SAVE_POSITION_SAVEPOSITION.ordinal();
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIP:
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIP;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION:
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_DODGING_OBJECTS_GRIPPOSITION;
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_SAVE_POSITION_SAVEPOSITION:
+			return stateVector[1] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_SAVE_POSITION_SAVEPOSITION;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE:
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_BLOCAGE;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL:
@@ -266,9 +278,9 @@ public class Statechart2 implements IStatemachine, ITimed {
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
 			return stateVector[0] == State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK;
 		case PASSIVE_WAIT_WAIT:
-			return stateVector[1] == State.PASSIVE_WAIT_WAIT;
+			return stateVector[2] == State.PASSIVE_WAIT_WAIT;
 		case CHECK_CHECK:
-			return stateVector[2] == State.CHECK_CHECK;
+			return stateVector[3] == State.CHECK_CHECK;
 		default:
 			return false;
 		}
@@ -852,6 +864,12 @@ public class Statechart2 implements IStatemachine, ITimed {
 		stateConfVectorPosition = 0;
 	}
 	
+	/* 'default' enter sequence for state savePosition */
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_save_position_savePosition_default() {
+		stateVector[1] = State.MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_SAVE_POSITION_SAVEPOSITION;
+		stateConfVectorPosition = 1;
+	}
+	
 	/* 'default' enter sequence for state blocage */
 	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_blocage_default() {
 		entryAction_move_robot_is_running_robot_is_in_cleaning_mode_blocage();
@@ -881,15 +899,15 @@ public class Statechart2 implements IStatemachine, ITimed {
 	/* 'default' enter sequence for state wait */
 	private void enterSequence_passive_wait_wait_default() {
 		entryAction_passive_wait_wait();
-		stateVector[1] = State.PASSIVE_WAIT_WAIT;
-		stateConfVectorPosition = 1;
+		stateVector[2] = State.PASSIVE_WAIT_WAIT;
+		stateConfVectorPosition = 2;
 	}
 	
 	/* 'default' enter sequence for state check */
 	private void enterSequence_check_check_default() {
 		entryAction_check_check();
-		stateVector[2] = State.CHECK_CHECK;
-		stateConfVectorPosition = 2;
+		stateVector[3] = State.CHECK_CHECK;
+		stateConfVectorPosition = 3;
 	}
 	
 	/* 'default' enter sequence for region move */
@@ -910,6 +928,11 @@ public class Statechart2 implements IStatemachine, ITimed {
 	/* 'default' enter sequence for region simple robot movement */
 	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement_default() {
 		react_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_simple_robot_movement__entry_Default();
+	}
+	
+	/* 'default' enter sequence for region save position */
+	private void enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_save_position_default() {
+		react_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_save_position__entry_Default();
 	}
 	
 	/* 'default' enter sequence for region do not cross a virtual wall */
@@ -973,6 +996,12 @@ public class Statechart2 implements IStatemachine, ITimed {
 		stateConfVectorPosition = 0;
 	}
 	
+	/* Default exit sequence for state savePosition */
+	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_save_position_savePosition() {
+		stateVector[1] = State.$NULLSTATE$;
+		stateConfVectorPosition = 1;
+	}
+	
 	/* Default exit sequence for state blocage */
 	private void exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_blocage() {
 		stateVector[0] = State.$NULLSTATE$;
@@ -998,16 +1027,16 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Default exit sequence for state wait */
 	private void exitSequence_passive_wait_wait() {
-		stateVector[1] = State.$NULLSTATE$;
-		stateConfVectorPosition = 1;
+		stateVector[2] = State.$NULLSTATE$;
+		stateConfVectorPosition = 2;
 		
 		exitAction_passive_wait_wait();
 	}
 	
 	/* Default exit sequence for state check */
 	private void exitSequence_check_check() {
-		stateVector[2] = State.$NULLSTATE$;
-		stateConfVectorPosition = 2;
+		stateVector[3] = State.$NULLSTATE$;
+		stateConfVectorPosition = 3;
 		
 		exitAction_check_check();
 	}
@@ -1041,6 +1070,14 @@ public class Statechart2 implements IStatemachine, ITimed {
 			break;
 		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOT_AND_VIRTUALWALL_DO_NOT_CROSS_A_VIRTUAL_WALL_VIRTUAL_BLOCK:
 			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_virtualWall_do_not_cross_a_virtual_wall_virtual_block();
+			break;
+		default:
+			break;
+		}
+		
+		switch (stateVector[1]) {
+		case MOVE_ROBOT_IS_RUNNING_ROBOT_IS_IN_CLEANING_MODE_ROBOTS_AND_OBJECT_SAVE_POSITION_SAVEPOSITION:
+			exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_save_position_savePosition();
 			break;
 		default:
 			break;
@@ -1094,7 +1131,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Default exit sequence for region passive_wait */
 	private void exitSequence_passive_wait() {
-		switch (stateVector[1]) {
+		switch (stateVector[2]) {
 		case PASSIVE_WAIT_WAIT:
 			exitSequence_passive_wait_wait();
 			break;
@@ -1105,7 +1142,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	
 	/* Default exit sequence for region check */
 	private void exitSequence_check() {
-		switch (stateVector[2]) {
+		switch (stateVector[3]) {
 		case CHECK_CHECK:
 			exitSequence_check_check();
 			break;
@@ -1132,6 +1169,11 @@ public class Statechart2 implements IStatemachine, ITimed {
 	/* Default react sequence for initial entry  */
 	private void react_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles__entry_Default() {
 		enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle_dodging_obstacles_moves_default();
+	}
+	
+	/* Default react sequence for initial entry  */
+	private void react_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_save_position__entry_Default() {
+		enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_save_position_savePosition_default();
 	}
 	
 	/* Default react sequence for initial entry  */
@@ -1237,6 +1279,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 						if (thereIsAnObject) {
 							exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robot_and_obstacle();
 							enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition_default();
+							enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_save_position_default();
 							move_robot_is_running_react(0);
 							
 							transitioned_after = 0;
@@ -1334,10 +1377,6 @@ public class Statechart2 implements IStatemachine, ITimed {
 		
 		if (transitioned_after<0) {
 		}
-		/* If no transition was taken then execute local reactions */
-		if (transitioned_after==transitioned_before) {
-			transitioned_after = move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_react(transitioned_before);
-		}
 		return transitioned_after;
 	}
 	
@@ -1348,13 +1387,22 @@ public class Statechart2 implements IStatemachine, ITimed {
 			if (readyToGrip) {
 				exitSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_gripPosition();
 				enterSequence_move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_dodging_objects_grip_default();
-				move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_react(0);
-				
 				transitioned_after = 0;
 			}
 		}
+		return transitioned_after;
+	}
+	
+	private long move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_save_position_savePosition_react(long transitioned_before) {
+		long transitioned_after = transitioned_before;
+		
+		if (transitioned_after<1) {
+		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
+			if (theObjectIsGrip) {
+				raiseSaveRobotPosition();
+			}
 			transitioned_after = move_robot_is_running_robot_is_in_cleaning_mode_robots_and_object_react(transitioned_before);
 		}
 		return transitioned_after;
@@ -1439,7 +1487,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	private long passive_wait_wait_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
-		if (transitioned_after<1) {
+		if (transitioned_after<2) {
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
@@ -1453,7 +1501,7 @@ public class Statechart2 implements IStatemachine, ITimed {
 	private long check_check_react(long transitioned_before) {
 		long transitioned_after = transitioned_before;
 		
-		if (transitioned_after<2) {
+		if (transitioned_after<3) {
 		}
 		/* If no transition was taken then execute local reactions */
 		if (transitioned_after==transitioned_before) {
