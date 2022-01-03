@@ -336,7 +336,11 @@ public class PolyCreateControler extends Supervisor {
 		stop();
 		closeGripper();
 		System.out.println("Gripper closed\n");
+<<<<<<< HEAD
 		store();
+=======
+		this.carryObject = true;
+>>>>>>> dev
 	}
 	
 	public void turnRound() {
@@ -348,6 +352,12 @@ public class PolyCreateControler extends Supervisor {
 		this.turn(Math.PI);
 		flushIRReceiver();
 		this.theChecker.freePathCheck();
+	}
+	
+	public void checkGripping() {
+		if(this.carryObject) {
+			theCtrl.raiseTheObjectIsGrip();
+		}
 	}
 	
 	/**

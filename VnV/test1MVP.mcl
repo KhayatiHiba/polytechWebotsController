@@ -1,0 +1,35 @@
+library 
+    macros.mcl
+end_library
+
+(*testMVP.ysc*)
+
+(* after entering moveFront we always pass in it again *)
+(*[true* . isPresent("moveFront","entering")] INEV("moveFront","entering")*)
+
+(* after entering moveBack we always enter turn *)
+(*[true* . isPresent("moveBack","entering")] INEV("turning","entering") true*)
+
+
+(* after entering B it is fairly always possible to enter A *)
+(*<true* . isPresent("stateB","entering") . true* . isPresent("stateC","entering")> @*)
+
+(* when leaving gapDown, there is no way to enter turning without entering moveBack first *)
+(*[true* . isPresent("gapDown","leaving") . (not isPresent("moveBack","entering"))* . isPresent("turning","entering")] false*)
+
+(* when entering blocage, I never pass through turning after *)
+(*<true* . isPresent("blocage","entering") . true* . not isPresent("turning","entering")> @*)
+
+(*[true* . isPresent("moveBack","entering")] mu X . (< true > true and [ isPresent("turning","entering") and not isPresent("moveFront","occurring") ] X)*)
+ 
+
+
+
+
+
+
+
+(*temporal1.ysc*)
+(*< true* . isPresent("StateB","entering"). (not isPresent("simple","ticks"))* . (isPresent("simple","ticks")){10} . (not isPresent("simple","ticks"))* . isPresent("StateA","entering")> @*)
+
+(*< true* . isPresent("StateB","entering"). (not isPresent("simple","ticks"))* . (isPresent("simple","ticks")){9} . (not isPresent("simple","ticks"))* . (isPresent("simple","ticks") and isPresent("StateB","leaving"))> @*)
